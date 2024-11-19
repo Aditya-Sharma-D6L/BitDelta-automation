@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import prac.SpotBalance;
 
 import java.time.Duration;
 
@@ -18,7 +19,7 @@ public class TransferFromSpotToDerivatives {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
 
-    private boolean checkDerivativesBalance() throws InterruptedException {
+    public boolean checkDerivativesBalance() throws InterruptedException {
 
         boolean flag = false;
 
@@ -33,6 +34,19 @@ public class TransferFromSpotToDerivatives {
         Thread.sleep(1000);
 
         // check for amount in DW
+        double balance = checkBalanceInWallet();
+
+        if (balance >= 100) {
+            System.out.println("Available Derivatives balance: " + balance);
+            flag = true;
+        }
+        return flag;
+    }
+
+    // this method checks balance in both spot and derivatives wallets depending on which wallet page it is
+    private double checkBalanceInWallet () throws InterruptedException {
+        // check for amount in DW
+        Thread.sleep(1000);
         WebElement availableDerivativesBalance = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[@class='chakra-text css-13c4fus']")));
         String balanceText = availableDerivativesBalance.getText();
 
@@ -40,13 +54,8 @@ public class TransferFromSpotToDerivatives {
         balanceText = balanceText.replaceAll("[^0-9.]]", ""); // Remove any non-numeric characters except the decimal point
 
         Thread.sleep(1500);
-        double balance = Double.parseDouble(balanceText);
 
-        if (balance >= 100) {
-            System.out.println("Available Derivatives balance: " + balance);
-            flag = true;
-        }
-        return flag;
+        return Double.parseDouble(balanceText);
     }
 
     public void transferFromSpotToDerivatives() throws InterruptedException {
@@ -59,11 +68,13 @@ public class TransferFromSpotToDerivatives {
             return;
         } else {
 
-            System.out.println("No balance in derivatives wallet, initiating transfer from Spot");
+            System.out.println("Current derivatives balance: " + checkBalanceInWallet());
+            System.out.println("Insufficient balance in derivatives wallet, initiating transfer from Spot");
 
             // click spot
             WebElement spotAccount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@href='/en/wallet/spot']//p[text()='Spot']")));
             spotAccount.click();
+            System.out.println("Current Spot balance: " + checkBalanceInWallet());
 
             // click transfer button
             Thread.sleep(3000);
@@ -72,9 +83,14 @@ public class TransferFromSpotToDerivatives {
 
             // enter amount to transfer
             WebElement transferableAmount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[@class='chakra-text css-13c4fus']")));
-            String amount = transferableAmount.getText();
+            String amountText = transferableAmount.getText().replace(",", "");
+            double amount = (Double.parseDouble(amountText)) / 2;
+            amountText = String.valueOf(amount);
+
+            System.out.println("Transferring half of spot amount to derivatives wallet: " + amountText);
+
             WebElement inputAmount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter amount']")));
-            inputAmount.sendKeys(amount);
+            inputAmount.sendKeys(amountText);
 
             // click "Transfer" button
             Thread.sleep(1000);
@@ -87,6 +103,15 @@ public class TransferFromSpotToDerivatives {
             // click "Close" after Transfer Successful
             WebElement close = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@type='button' and text()='Close']")));
             close.click();
+
+            Thread.sleep(1000);
+            System.out.println("Amount transfer successful, \n amount transferred: " + amountText);
+
+            driver.navigate().refresh();
+            WebElement derivativesWallet = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@href='/en/wallet/derivatives']//p[text()='Derivatives']")));
+            derivativesWallet.click();
+            Thread.sleep(1000);
+            System.out.println("Latest derivatives balance: " + checkBalanceInWallet());
         }
     }
 }

@@ -13,7 +13,7 @@ public class Login {
     private static final String BASE_URL = "https://copy-trading.bitdelta.com/en/";
     private static final String LOGIN_URL = BASE_URL + "login";
 
-    private static final String EMAIL = "bctmaster40@yopmail.com";
+    private static final String EMAIL = "bctmaster41@yopmail.com";
     private static final String PASSWORD = "Pass@12345";
     private static final Boolean applyForMasterTrader = true;
     private static final Boolean transferFromSpotToDerivatives = true;
@@ -55,24 +55,24 @@ public class Login {
         Thread.sleep(1500);
         fillGeneralSurvey();
 
-        // transfer amount in derivatives wallet
-        if (transferFromSpotToDerivatives) {
-            transferAmount();
-        }
-
-        // go to derivatives and place hedging order
-        Thread.sleep(1000);
-        placeDerivativeOrder();
-
-        // wait sometime after derivative order is closed
-        Thread.sleep(2000);
-
         // apply for master trader
         if (applyForMasterTrader) {
+            // transfer amount in derivatives wallet
+            if (transferFromSpotToDerivatives) {
+                transferAmount();
+            }
+
+            // go to derivatives and place hedging order
+            Thread.sleep(1000);
+            placeDerivativeOrder();
+
+            // wait sometime after derivative order is closed
+            Thread.sleep(2000);
+
             System.out.println("Going to apply for master trader");
             applyMasterTrader();
         } else {
-            System.out.println("Not applying for master trader");
+            System.out.println("Not applying for master trader for this user");
         }
 
     }

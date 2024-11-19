@@ -100,7 +100,7 @@ public class KycAndSpot {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         // Define input values for manual execution
-        String uid = "";             // Set UID if available, or leave blank if using email
+        String uid = "754649";             // Set UID if available, or leave blank if using email
         String email = ""; // Set email if UID is not used
         String spotBalanceAmount = "3000"; // Spot balance amount to be updated
 

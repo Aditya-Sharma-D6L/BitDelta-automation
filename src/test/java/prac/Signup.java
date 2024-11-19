@@ -28,7 +28,7 @@ public class Signup {
     public static void main(String[] args) throws InterruptedException {
         Signup signup = new Signup();
 
-        String email = "bctmaster40@yopmail.com";
+        String email = "bctmaster41@yopmail.com";
         String password = "Pass@12345";
         String spotBalance = "3000";
 

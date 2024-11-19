@@ -35,12 +35,8 @@ public class ForgetPassword {
         WebElement submitButton = driver.findElement(By.xpath("//button[@type='submit']"));
         submitButton.click();
 
-
         // enter OTP
         handleOTP(driver, email);
-
-
-
     }
 
     private static void handleOTP(WebDriver driver, String email) {
