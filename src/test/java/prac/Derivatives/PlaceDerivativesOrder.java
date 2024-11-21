@@ -177,14 +177,15 @@ public class PlaceDerivativesOrder {
         int count = 1;
         while (count <= derivativesOrderCount) {
 
+            WebElement clickBuyLongButton;
             if (orderType.equals("buy")) { // when order type is buy
-                WebElement clickBuyLongButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@type='button']//p[contains(text(), 'Buy / Long')]")));
-                clickBuyLongButton.click();
+                clickBuyLongButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='button']//p[contains(text(), 'Buy / Long')]")));
             } else { // when order type is sell
-                WebElement clickBuyLongButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@type='button']//p[contains(text(), 'Sell / Short')]")));
-                clickBuyLongButton.click();
+                clickBuyLongButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='button']//p[contains(text(), 'Sell / Short')]")));
             }
-            WebElement confirmBuyOrder = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Confirm']")));
+            clickBuyLongButton.click();
+
+            WebElement confirmBuyOrder = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[text()='Confirm']")));
             confirmBuyOrder.click();
 
             System.out.println(count + " order placed");

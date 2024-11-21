@@ -18,7 +18,7 @@ public class Login {
     public static final String ENV = "staging";
 
     // COPY TRADING DETAILS
-    private static final Boolean applyForMasterTrader = true;
+    private static final Boolean applyForMasterTrader = false;
     private static final Boolean transferFromSpotToDerivatives = false;
 
     // SPOT ORDER DETAILS
@@ -30,10 +30,10 @@ public class Login {
     private static final String amount = "15"; // This is the $ amount sent to the input fields in the market order for buy/sell
 
     // DERIVATIVES ORDER DETAILS
-    private static final Boolean placeDerivativesOrders = false;
+    private static final Boolean placeDerivativesOrders = true;
     private static final String DSELL = "sell";
     private static final String DBUY = "buy";
-    private static final int derivativesOrderCount = 1;
+    private static final int derivativesOrderCount = 20;
     private static final String derivativesOrderType = DBUY;
 
     private static final String BASE_URL = "https://" + ENV + ".bitdelta.com/en/";

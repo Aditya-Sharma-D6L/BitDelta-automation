@@ -23,6 +23,17 @@ public class ApplyMasterTrader {
         clickCopyTrading.click();
         Thread.sleep(2000);
 
+        // check if user is already a master trader after his application is approved
+        try {
+            WebElement checkGoToMyMasterTraderDashboardButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[normalize-space()='Go to My Master Trader Dashboard']")));
+            if (checkGoToMyMasterTraderDashboardButton.isDisplayed()) {
+                System.out.println("This user is already a master trader");
+                return;
+            }
+        } catch (TimeoutException e) {
+            // continue
+        }
+
         // click "Apply to be a Master Trader"
         WebElement clickApplyToBeMaster = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Apply to be a Master Trader']")));
         clickApplyToBeMaster.click();
