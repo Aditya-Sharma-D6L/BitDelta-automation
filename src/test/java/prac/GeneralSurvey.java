@@ -25,6 +25,8 @@ public class GeneralSurvey {
                 By.xpath("//div/div/div[contains(@id, 'general_survey_1')]/label/span[contains(text(), 'Yes')]")));
         question1button.click();
 
+        System.out.println("Filling General Survey...");
+
         // Question 2 (PEP) - click no
         WebElement question2button = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//div/div/div[contains(@id, 'general_survey_2')]/label/span[contains(text(), 'No')]")));
@@ -124,6 +126,8 @@ public class GeneralSurvey {
 
         // Click "Submit" button
         driver.findElement(By.xpath("//button[normalize-space()='Submit']")).click();
+
+        System.out.println("General survey submitted");
     }
 
 }

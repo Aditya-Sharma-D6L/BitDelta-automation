@@ -24,8 +24,9 @@ public class SpotBalance {
         driver.findElement(By.xpath("//div[normalize-space()='Spot Balance']")).click();
 
         // Search for "USDT"
-        driver.findElement(By.xpath("//input[@placeholder='search...']")).sendKeys("USDT");
-        Thread.sleep(2000);
+//        driver.findElement(By.xpath("//input[@placeholder='search...']")).sendKeys("USDT");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='search...']"))).sendKeys("USDT");
+        Thread.sleep(1500);
 
         // Click on "Edit" button to enter amount
         driver.findElement(By.xpath("//table[@class='table table-report mt-2']//a[@class='flex items-center mr-3 cursor-pointer'][normalize-space()='Edit']")).click();

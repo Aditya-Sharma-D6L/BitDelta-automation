@@ -7,6 +7,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.Random;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FillApplicationForm {
 
@@ -51,42 +53,61 @@ public class FillApplicationForm {
     }
 
     // generate random Display name
-    public static class DisplayNameGenerator {
+    public class DisplayNameGenerator {
+
+        // Set to store all previously generated names
+        private static Set<String> generatedNames = new HashSet<>();
 
         public static String generateDisplayName() {
             return generateDisplayNames();
         }
 
         public static String generateDisplayNames() {
-            String letters = "abcdefghijklmnopqrstuvwxyz";
-            String digits = "0123456789";
+            // Arrays of meaningful parts for the name
+            String[] adjectives = {"Swift", "Bold", "Silent", "Brave", "Noble", "Quick", "Loyal", "Mighty", "Clever", "Bright"};
+            String[] animals = {"Tiger", "Eagle", "Wolf", "Lion", "Fox", "Shark", "Bear", "Falcon", "Panther", "Hawk"};
+            String[] places = {"Mars", "Venus", "Oasis", "Atlantis", "Zenith", "Nebula", "Canyon", "Peak", "Summit", "Galaxy"};
+
             Random random = new Random();
+            String newName;
 
-            // Ensure mandatory parts
-            char capitalLetter = Character.toUpperCase(letters.charAt(random.nextInt(letters.length())));
-            char digit = digits.charAt(random.nextInt(digits.length()));
-            char hyphen = '-';
+            // Ensure that the name is unique
+            do {
+                // Select meaningful parts
+                String adjective = adjectives[random.nextInt(adjectives.length)];
+                String animal = animals[random.nextInt(animals.length)];
+                String place = places[random.nextInt(places.length)];
 
-            // Generate remaining random characters
-            StringBuilder nameBuilder = new StringBuilder();
-            nameBuilder.append(capitalLetter).append(hyphen).append(digit);
+                char digit = (char) ('0' + random.nextInt(10));  // Random digit
+                char hyphen = '-';
 
-            while (nameBuilder.length() < 10 + random.nextInt(7)) { // To keep length between 10-16 characters
-                nameBuilder.append(letters.charAt(random.nextInt(letters.length())));
-            }
+                // Generate the base name structure (Adjective + Animal or Place + Digit)
+                StringBuilder nameBuilder = new StringBuilder();
+                nameBuilder.append(adjective).append(hyphen).append(animal).append(digit);
 
-            return nameBuilder.toString();
+                // Adjust length to meet the constraints (10 to 16 characters)
+                while (nameBuilder.length() < 10 + random.nextInt(7)) {
+                    char randomLetter = (char) ('a' + random.nextInt(26));  // Random letter
+                    nameBuilder.append(randomLetter);
+                }
+
+                newName = nameBuilder.toString();
+
+            } while (generatedNames.contains(newName)); // Ensure the name is unique
+
+            // Add the newly generated name to the set to keep track of it
+            generatedNames.add(newName);
+
+            // Return the unique name
+            return newName;
         }
 
-        private static String shuffle(String input, Random random) {
-            char[] array = input.toCharArray();
-            for (int i = array.length - 1; i > 0; i--) {
-                int j = random.nextInt(i + 1);
-                char temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
+        public static void main(String[] args) {
+            // Generate a few names to demonstrate uniqueness
+            for (int i = 0; i < 10; i++) {
+                System.out.println(generateDisplayName());
             }
-            return new String(array);
         }
     }
+
 }

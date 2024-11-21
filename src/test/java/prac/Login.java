@@ -4,19 +4,40 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import prac.Derivatives.PlaceDerivativesOrder;
+import prac.Derivatives.PlaceSpotOrder;
 import prac.copyTrading.*;
 
 import java.time.Duration;
 
 public class Login {
 
-    private static final String BASE_URL = "https://copy-trading.bitdelta.com/en/";
-    private static final String LOGIN_URL = BASE_URL + "login";
-
-    private static final String EMAIL = "bctmaster41@yopmail.com";
+    // GENERAL DETAILS AND CREDENTIALS
+    private static final String EMAIL = "pagesort12@yopmail.com";
     private static final String PASSWORD = "Pass@12345";
+    public static final String ENV = "staging";
+
+    // COPY TRADING DETAILS
     private static final Boolean applyForMasterTrader = true;
-    private static final Boolean transferFromSpotToDerivatives = true;
+    private static final Boolean transferFromSpotToDerivatives = false;
+
+    // SPOT ORDER DETAILS
+    private static final Boolean placeSpotOrders = false;
+    private static final String SELL = "sell";
+    private static final String BUY = "buy";
+    private static final int spotOrderCount = 5;
+    private static final String spotOrderType = BUY;
+    private static final String amount = "15"; // This is the $ amount sent to the input fields in the market order for buy/sell
+
+    // DERIVATIVES ORDER DETAILS
+    private static final Boolean placeDerivativesOrders = false;
+    private static final String DSELL = "sell";
+    private static final String DBUY = "buy";
+    private static final int derivativesOrderCount = 1;
+    private static final String derivativesOrderType = DBUY;
+
+    private static final String BASE_URL = "https://" + ENV + ".bitdelta.com/en/";
+    private static final String LOGIN_URL = BASE_URL + "login";
 
     private final WebDriverWait wait;
     private final WebDriver driver;
@@ -46,34 +67,59 @@ public class Login {
         toggleTheme.click();
 
         enterCredentials();
-        clickLoginButton();
+//        clickLoginButton();
+
         handleTnCPopup();
 
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         handleLoginOTP();
 
         Thread.sleep(1500);
         fillGeneralSurvey();
 
         // apply for master trader
+        boolean checkHedgingOrderWhenApplyingForMaster = false;
         if (applyForMasterTrader) {
+
+            checkHedgingOrderWhenApplyingForMaster = true;
+
             // transfer amount in derivatives wallet
             if (transferFromSpotToDerivatives) {
                 transferAmount();
             }
 
+
             // go to derivatives and place hedging order
             Thread.sleep(1000);
-            placeDerivativeOrder();
+            placeDerivativeOrder(ENV, checkHedgingOrderWhenApplyingForMaster);
 
             // wait sometime after derivative order is closed
             Thread.sleep(2000);
 
+            System.out.println();
             System.out.println("Going to apply for master trader");
             applyMasterTrader();
         } else {
             System.out.println("Not applying for master trader for this user");
         }
+
+        // Place spot orders
+        if (placeSpotOrders) {
+            placeSpotOrders();
+        }
+
+        if (placeDerivativesOrders) {
+            placeDerivativeOrder(ENV, checkHedgingOrderWhenApplyingForMaster);
+        }
+    }
+
+    private void placeSpotOrders() throws InterruptedException {
+        PlaceSpotOrder p = new PlaceSpotOrder(driver);
+
+        // go to spot
+        p.goToSpotPage();
+
+        p.placeBuyMarketOrders(spotOrderCount, spotOrderType, amount);
 
     }
 
@@ -86,8 +132,13 @@ public class Login {
         WebElement emailField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Email']")));
         emailField.sendKeys(EMAIL);
 
+        clickLoginButton();
+
         WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Password']")));
         passwordField.sendKeys(PASSWORD);
+
+        // click "Next" button
+        driver.findElement(By.xpath("//button[@type='submit' and text()='NEXT']")).click();
     }
 
     private void clickLoginButton() {
@@ -97,13 +148,26 @@ public class Login {
 
     private void handleTnCPopup() {
         try {
-            WebElement tncCheckbox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='chakra-checkbox__control css-1osrtzr']")));
-            tncCheckbox.click();
+            try {
+//                WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
+                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
 
-            WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
-            acceptButton.click();
+                // Ensure the element is scrolled into view before clicking
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
+
+                scrollButton.click();
+            } catch (NoSuchElementException | TimeoutException e) {
+
+                Thread.sleep(1000);
+
+                WebElement checkBox = driver.findElement(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']"));
+                checkBox.click();
+
+                WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
+                acceptButton.click();
+            }
         } catch (Exception e) {
-            System.out.println("TnC not found or already accepted. Continuing...");
+            System.out.println("TnC not found, continuing...");
         }
     }
 
@@ -126,7 +190,7 @@ public class Login {
             survey.fillAdditionalQuestions();
             System.out.println("General Survey Completed.");
         } catch (NoSuchElementException | TimeoutException e) {
-            System.out.println("Survey already filled, continuing...");
+            System.out.println("General Survey already filled, continuing...");
         } catch (Exception e) {
             System.out.println("An error occurred while attempting to fill out the survey or survey is already filled.");
         }
@@ -141,12 +205,13 @@ public class Login {
         } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Error filling the form: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("An error occurred while attempting to click copy trading button.");
+            System.out.println("An error occurred while attempting to click 'Start Copy Trading' button.");
+            e.printStackTrace();
             System.out.println(e.getMessage());
         }
     }
 
-    public void placeDerivativeOrder() {
+    public void placeDerivativeOrder(String env, boolean status) {
         try {
             PlaceDerivativesOrder placeOrder = new PlaceDerivativesOrder(driver);
             placeOrder.goToDerivatives();
@@ -154,10 +219,10 @@ public class Login {
             try {
                 placeOrder.completeDerivativesQuiz();
             } catch (Exception e) {
-                System.out.println("Seems like Derivatives Quiz is already done.");
+                System.out.println("Derivatives quiz already done");
             }
 
-            placeOrder.placeMarketOrder();
+            placeOrder.placeMarketOrder(derivativesOrderCount, derivativesOrderType, env, status);
         } catch (Exception e) {
             System.out.println("Error placing derivatives market order.");
             System.out.println(e.getMessage());

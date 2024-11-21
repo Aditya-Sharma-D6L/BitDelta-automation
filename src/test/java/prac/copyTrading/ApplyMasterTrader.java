@@ -47,9 +47,7 @@ public class ApplyMasterTrader {
                 // Click the button
                 clickStart.click();
                 System.out.println("Quiz completed and submitted");
-            } catch (NoSuchElementException e) {
-                System.out.println("Congratulations pop-up not found");
-            } catch (TimeoutException e) {
+            } catch (NoSuchElementException | TimeoutException e) {
                 System.out.println("Quiz already done");
                 System.out.println("Proceeding to fill the form...");
             } catch (Exception e) {

@@ -5,7 +5,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import prac.SpotBalance;
 
 import java.time.Duration;
 
@@ -16,7 +15,7 @@ public class TransferFromSpotToDerivatives {
 
     public TransferFromSpotToDerivatives(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(7));
     }
 
     public boolean checkDerivativesBalance() throws InterruptedException {
@@ -60,16 +59,18 @@ public class TransferFromSpotToDerivatives {
 
     public void transferFromSpotToDerivatives() throws InterruptedException {
 
-        // go to the wallet
+        // click wallet and go to overview
         WebElement clickWallet = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div/p[contains(text(), 'Wallet')]")));
         clickWallet.click();
+        WebElement overview = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[normalize-space()='Overview']")));
+        overview.click();
 
         if (checkDerivativesBalance()) {
             return;
         } else {
 
             System.out.println("Current derivatives balance: " + checkBalanceInWallet());
-            System.out.println("Insufficient balance in derivatives wallet, initiating transfer from Spot");
+            System.out.println("Initiating transfer from Spot...");
 
             // click spot
             WebElement spotAccount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@href='/en/wallet/spot']//p[text()='Spot']")));
