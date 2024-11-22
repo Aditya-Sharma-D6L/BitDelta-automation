@@ -20,6 +20,7 @@ public class SpotBalance {
         // Click on "Reports" dropdown
         driver.findElement(By.xpath("//div[normalize-space()='Reports']")).click();
 
+        Thread.sleep(500);
         // Click on "Spot Balance"
         driver.findElement(By.xpath("//div[normalize-space()='Spot Balance']")).click();
 

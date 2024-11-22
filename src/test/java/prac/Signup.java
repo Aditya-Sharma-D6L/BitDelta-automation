@@ -11,11 +11,11 @@ public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
     // static String email = "bctmaster42@yopmail.com";
-    static String email = "pagesort12@yopmail.com";
+    static String email = "qatest2@yopmail.com";
     static String password = "Pass@12345";
     static String spotBalance = "8000";
     static String env = "staging";
-    static String referralCode = "9ypo7n_R";
+    static String referralCode = "";
     static boolean signUpWithReferral = false;
 
     private static final String REGISTER_URL = "https://" + env + ".bitdelta.com/en/register";

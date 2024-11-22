@@ -18,11 +18,11 @@ public class Login {
     public static final String ENV = "staging";
 
     // COPY TRADING DETAILS
-    private static final Boolean applyForMasterTrader = false;
-    private static final Boolean transferFromSpotToDerivatives = false;
+    private static final boolean applyForMasterTrader = false;
+    private static final boolean transferFromSpotToDerivatives = false;
 
     // SPOT ORDER DETAILS
-    private static final Boolean placeSpotOrders = false;
+    private static final boolean placeSpotOrders = false;
     private static final String SELL = "sell";
     private static final String BUY = "buy";
     private static final int spotOrderCount = 5;
@@ -30,7 +30,7 @@ public class Login {
     private static final String amount = "15"; // This is the $ amount sent to the input fields in the market order for buy/sell
 
     // DERIVATIVES ORDER DETAILS
-    private static final Boolean placeDerivativesOrders = true;
+    private static final boolean placeDerivativesOrders = true;
     private static final String DSELL = "sell";
     private static final String DBUY = "buy";
     private static final int derivativesOrderCount = 20;

@@ -91,14 +91,6 @@ public class KycAndSpot {
 
     private void searchByUID(String uid) throws InterruptedException {
 
-        if (env.equals("qa")) {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='flex flex-wrap gap-2']//div[2]//input[1]"))).sendKeys(uid);
-            driver.findElement(By.xpath("//button[normalize-space()='Go']")).click();
-            Thread.sleep(1000);
-            driver.findElement(By.xpath("//a[@class='link']")).click(); // Open profile by ID
-            return;
-        }
-
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Search by UID']"))).sendKeys(uid);
         driver.findElement(By.xpath("//button[normalize-space()='Go']")).click();
         Thread.sleep(2000);
@@ -106,13 +98,6 @@ public class KycAndSpot {
     }
 
     private void searchByEmail(String email) throws InterruptedException {
-
-        if (env.equals("qa")) {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='mt-5 w-full sm:w-auto']//input[@type='text']"))).sendKeys(email);
-            driver.findElement(By.xpath("//button[normalize-space()='Go']")).click();
-            driver.findElement(By.xpath("//a[@class='link']")).click(); // Open profile by email
-            return;
-        }
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Search by email']"))).sendKeys(email);
         driver.findElement(By.xpath("//button[normalize-space()='Go']")).click();
@@ -126,7 +111,7 @@ public class KycAndSpot {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         // Define input values for manual execution
-        String uid = "754652";             // Set UID if available, or leave blank if using email
+        String uid = "754691";             // Set UID if available, or leave blank if using email
         String email = ""; // Set email if UID is not used
         String spotBalanceAmount = "3000"; // Spot balance amount to be updated
 
