@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WindowType;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -102,18 +103,21 @@ public class KycAndSpot {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Search by email']"))).sendKeys(email);
         driver.findElement(By.xpath("//button[normalize-space()='Go']")).click();
         Thread.sleep(2000);
-        driver.findElement(By.xpath("//a[@class='link']")).click(); // Open profile by email
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[text()='" + email + "']/preceding::td[2]/a"))).click(); // Open profile by email
+        //table//td[text()='%s']/preceding-sibling::td/a[@class='link']
     }
 
     // Main method for independent execution
     public static void main(String[] args) {
-        WebDriver driver = new ChromeDriver();
+//        WebDriver driver = new ChromeDriver();
+        WebDriver driver = new EdgeDriver();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         // Define input values for manual execution
-        String uid = "754691";             // Set UID if available, or leave blank if using email
+        String uid = "744584";             // Set UID if available, or leave blank if using email
         String email = ""; // Set email if UID is not used
-        String spotBalanceAmount = "3000"; // Spot balance amount to be updated
+        String spotBalanceAmount = "5000"; // Spot balance amount to be updated
 
         try {
             driver.get(adminUrl); // Open admin login page

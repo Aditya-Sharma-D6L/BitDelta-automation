@@ -80,8 +80,8 @@ public class CopyTradingQuiz {
         } catch (NoSuchElementException e) {
             System.out.println("No Quiz found: Looks like CT Quiz has been done.");
         } catch (TimeoutException e) {
-            System.out.println("Submit button was clicked, but visibility check failed");
-//            e.printStackTrace();
+//            System.out.println("Submit button was clicked, but visibility check failed");
+            // do nothing
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

@@ -52,14 +52,14 @@ public class ApplyMasterTrader {
 
             try {
                 // click "Start Copy Trading" button
-                wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='chakra-modal-:ra:']")));
-                WebElement clickStart = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='chakra-modal--body-:ra:']/div/div/button")));
+//                wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='chakra-modal-:ra:']")));
+                WebElement clickStart = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='chakra-modal--body-:ra:']/div/div/button")));
 
                 // Click the button
                 clickStart.click();
                 System.out.println("Quiz completed and submitted");
             } catch (NoSuchElementException | TimeoutException e) {
-                System.out.println("Quiz already done");
+                System.out.println("Quiz done");
                 System.out.println("Proceeding to fill the form...");
             } catch (Exception e) {
                 System.out.println("An unexpected exception occurred: " + e.getMessage());

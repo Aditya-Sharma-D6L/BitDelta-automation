@@ -6,6 +6,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
+
 public class SpotBalance {
 
     private final WebDriver driver;
@@ -13,7 +15,7 @@ public class SpotBalance {
 
     public SpotBalance(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
-        this.wait = wait;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void updateSpotBalance(String spotBalance) throws InterruptedException {
@@ -46,7 +48,7 @@ public class SpotBalance {
         driver.findElement(By.xpath("//div[@id='editCurrencyModal']//button[@type='button'][normalize-space()='Update']")).click();
 
         // click on "Dashboard"
-        WebElement dashboard = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//nav[contains(@class, 'top-nav bg-theme-1 block')]//div[contains(text(), 'Dashboard ')]")));
+        WebElement dashboard = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//nav[contains(@class, 'top-nav bg-theme-1 block')]//div[contains(text(), 'Dashboard ')]")));
         dashboard.click();
 
         // click on "Profile Overview"
