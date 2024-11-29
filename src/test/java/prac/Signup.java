@@ -14,20 +14,20 @@ public class Signup {
      static String email = "rewardbonus1@yopmail.com";
 //    static String email = "profile3@yopmail.com";
     static String password = "Pass@12345";
-    static String country = "Iceland";
+    static String country = "";
 
     static String referralCode = "";
     static boolean signUpWithReferral = false;
 
-    static String env = "qa";
+    // Control variable for initiating KYC and Spot Balance
+    protected boolean initiateKYCAndSpot = false;  // Set to true by default
+    static String spotBalance = "8000";
+
+    static String env = "staging";
 
     private static final String REGISTER_URL = "https://" + env + ".bitdelta.com/en/register";
     private final WebDriver driver;
     private final WebDriverWait wait;
-
-    // Control variable for initiating KYC and Spot Balance
-    protected boolean initiateKYCAndSpot = false;  // Set to true by default
-    static String spotBalance = "8000";
 
     public Signup() {
         this.driver = new ChromeDriver();
