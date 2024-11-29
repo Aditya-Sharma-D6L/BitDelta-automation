@@ -1,72 +1,66 @@
 package prac.review;
 
 import java.time.Duration;
-import org.openqa.selenium.By;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Random;
 
-import org.openqa.selenium.WebDriver;
-
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-
-
-
-
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class WriteReview {
 
     public static void main(String[] args) throws InterruptedException {
 
-// TODO Auto-generated method stub
-
-//implicit wait - 2 seconds time out
-
-
-//        System.setProperty("webdriver.chrome.driver", "/Users/rahulshetty/Documents/chromedriver");
-
         WebDriver driver = new ChromeDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.get("http://qaclickacademy.com/practice.php");
+        driver.manage().window().maximize();
 
-        driver.get("https://rahulshettyacademy.com/locatorspractice/");
+        // wait for the page to load
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[normalize-space()='Practice Page']")));
 
-        driver.findElement(By.id("inputUsername")).sendKeys("rahul");
+        // check any of the 3 options randomly
+        int n = randomNumberGenerator();
+        WebElement option = driver.findElement(By.xpath("(//label/input[@type='checkbox'])[" + n + "]"));
+        option.click();
 
-        driver.findElement(By.name("inputPassword")).sendKeys("hello123");
+        // fetch the selected option text
+        String optionText = driver.findElement(By.xpath("(//label/input[@type='checkbox'])[" + n + "]/parent::label")).getText();
+        System.out.println(optionText);
 
-        driver.findElement(By.className("signInBtn")).click();
+        // select the option from dropdown
+        driver.findElement(By.cssSelector("select[id='dropdown-class-example']")).sendKeys(optionText);
 
-        System.out.println(driver.findElement(By.cssSelector("p.error")).getText());
+        // enter option text in the "Enter Your Name" input field
+        driver.findElement(By.cssSelector("input[id='name']")).sendKeys(optionText);
 
-        driver.findElement(By.linkText("Forgot your password?")).click();
+        // click the alert button
+        driver.findElement(By.cssSelector("input[id='alertbtn']")).click();
 
-        Thread.sleep(1000);//
+        // validate text in the alert popup
+        Alert alert = driver.switchTo().alert();
 
-        driver.findElement(By.xpath("//input[@placeholder='Name']")).sendKeys("John");
+        String actualString = alert.getText();
 
-        driver.findElement(By.cssSelector("input[placeholder='Email']")).sendKeys("john@rsa.com");
+        if (actualString.contains(optionText)) {
+            System.out.println("Alert contains the selected option name");
+        } else {
+            System.out.println("Alert doesn't contains the selected option name");
+        }
 
-        driver.findElement(By.xpath("//input[@type='text'][2]")).clear();
+        alert.accept();
 
-        driver.findElement(By.cssSelector("input[type='text']:nth-child(3)")).sendKeys("john@gmail.com");
 
-        driver.findElement(By.xpath("//form/input[3]")).sendKeys("9864353253");
-
-        driver.findElement(By.cssSelector(".reset-pwd-btn")).click();
-
-        System.out.println(driver.findElement(By.cssSelector("form p")).getText());
-
-        driver.findElement(By.xpath("//div[@class='forgot-pwd-btn-conainer']/button[1]")).click();
-
-        Thread.sleep(1000);
-
-        driver.findElement(By.cssSelector("#inputUsername")).sendKeys("rahul");
-
-        driver.findElement(By.cssSelector("input[type*='pass']")).sendKeys("rahulshettyacademy");
-
-        driver.findElement(By.id("chkboxOne")).click();
-
-        driver.findElement(By.xpath("//button[contains(@class,'submit')]")).click();
     }
 
-
+    public static int randomNumberGenerator() {
+            Random rand = new Random();
+        // Generates a random number between 0 and 2, then adds 1
+        return rand.nextInt(3) + 1;
+    }
 
 }

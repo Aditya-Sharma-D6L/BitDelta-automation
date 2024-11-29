@@ -10,37 +10,41 @@ import java.time.Duration;
 public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
-    // static String email = "bctmaster42@yopmail.com";
-    static String email = "m3@yopmail.com";
+
+     static String email = "rewardbonus1@yopmail.com";
+//    static String email = "profile3@yopmail.com";
     static String password = "Pass@12345";
-    static String spotBalance = "8000";
-    static String env = "staging";
-    static String referralCode = "6fgrif_A_nc9eic";
+    static String country = "Iceland";
+
+    static String referralCode = "";
     static boolean signUpWithReferral = false;
+
+    static String env = "qa";
 
     private static final String REGISTER_URL = "https://" + env + ".bitdelta.com/en/register";
     private final WebDriver driver;
     private final WebDriverWait wait;
 
     // Control variable for initiating KYC and Spot Balance
-    protected boolean initiateKYCAndSpot = true;  // Set to true by default
+    protected boolean initiateKYCAndSpot = false;  // Set to true by default
+    static String spotBalance = "8000";
 
     public Signup() {
         this.driver = new ChromeDriver();
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
 
     public static void main(String[] args) throws InterruptedException {
         Signup signup = new Signup();
 
         try {
-            signup.registerUser(email, password, signUpWithReferral, referralCode, spotBalance);
+            signup.registerUser(email, password, country, signUpWithReferral, referralCode, spotBalance);
         } finally {
             signup.teardown();
         }
     }
 
-    public void registerUser(String email, String password, boolean signUpWithReferral, String referralCode, String spotBalanceAmount) throws InterruptedException {
+    public void registerUser(String email, String password, String country, boolean signUpWithReferral, String referralCode, String spotBalanceAmount) throws InterruptedException {
         driver.get(REGISTER_URL);
         driver.manage().window().maximize();
 
@@ -51,19 +55,22 @@ public class Signup {
         toggleTheme.click();
         Thread.sleep(1000);
 
-        enterCredentials(email, password, signUpWithReferral, referralCode);
+        enterCredentials(email, password, country, signUpWithReferral, referralCode);
         submitRegistrationForm();
 
-        Thread.sleep(1000);
+//        Thread.sleep(1000);
         handleTnCPopup();
 
-        Thread.sleep(2000);
+        // wait 3 seconds for captcha
+        Thread.sleep(5000);
+
+        // handle the OTP
         handleOTP();
 
         // another TnC comes after signup, before general survey
         handleTnCPopup();
 
-        Thread.sleep(2000);
+//        Thread.sleep(2000);
         fillGeneralSurvey();
 
         Thread.sleep(2000);
@@ -74,7 +81,14 @@ public class Signup {
         }
     }
 
-    private void enterCredentials(String email, String password, boolean signUpWithReferral, String referralCode) {
+    private void enterCredentials(String email, String password, String country, boolean signUpWithReferral, String referralCode) {
+
+        if (!country.isEmpty()) {
+            driver.findElement(By.xpath("//input[@role='combobox']")).sendKeys(country);
+            WebElement selectCountry = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='" + country + "']")));
+            selectCountry.click();
+        }
+
         driver.findElement(By.xpath("//input[@placeholder='Email']")).sendKeys(email);
         driver.findElement(By.xpath("//input[@placeholder='Password']")).sendKeys(password);
 
@@ -116,12 +130,14 @@ public class Signup {
                 acceptButton.click();
 
         } catch (Exception e) {
-            System.out.println("TnC popup not found or could not be handled.");
+            System.out.println("TnC popup not found.");
         }
     }
 
     private void handleOTP() throws InterruptedException {
-        Thread.sleep(1000);
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[text()='Verify OTP']")));
+
         for (int i = 0; i < 6; i++) {
             WebElement pinInputField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-index='" + i + "']")));
             pinInputField.sendKeys(String.valueOf(i + 1)); // Sample OTP

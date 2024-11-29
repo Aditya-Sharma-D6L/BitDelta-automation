@@ -67,12 +67,6 @@ public class GeneralSurvey {
         // Click "Next" button
         driver.findElement(By.xpath("//button[normalize-space()='Next']")).click();
 
-        // Wait for next page to load
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
         // Additional survey questions
         WebElement question9button = wait.until(ExpectedConditions.visibilityOfElementLocated(
@@ -102,12 +96,6 @@ public class GeneralSurvey {
         // Click "Next" button
         driver.findElement(By.xpath("//button[normalize-space()='Next']")).click();
 
-        // Wait for the next page to load
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
         // Client agreement
         WebElement clientAgreement = wait.until(ExpectedConditions.visibilityOfElementLocated(

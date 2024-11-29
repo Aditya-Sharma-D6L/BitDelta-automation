@@ -19,6 +19,8 @@ public class SpotBalance {
     }
 
     public void updateSpotBalance(String spotBalance) throws InterruptedException {
+
+        Thread.sleep(1000);
         // Click on "Reports" dropdown
         driver.findElement(By.xpath("//div[normalize-space()='Reports']")).click();
 

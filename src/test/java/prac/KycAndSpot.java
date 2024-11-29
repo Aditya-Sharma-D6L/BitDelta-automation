@@ -16,7 +16,10 @@ public class KycAndSpot {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    private static final String env = "staging";
+    private static final String env = "qa";
+
+    private static final boolean approveKyc = true;
+    private static final boolean approveSpotBalance = true;
 
     static String adminUrl = "https://" + env + "-admin.bitdelta.com/login";
 
@@ -51,12 +54,16 @@ public class KycAndSpot {
         }
 
         // Perform KYC approval
-        KYC kyc = new KYC(driver, wait);
-        kyc.approveKYC(env);
+        if (approveKyc) {
+            KYC kyc = new KYC(driver, wait);
+            kyc.approveKYC(env);
+        }
 
         // Update Spot Balance
-        SpotBalance spotBalance = new SpotBalance(driver, wait);
-        spotBalance.updateSpotBalance(spotBalanceAmount);
+        if (approveSpotBalance) {
+            SpotBalance spotBalance = new SpotBalance(driver, wait);
+            spotBalance.updateSpotBalance(spotBalanceAmount);
+        }
 
         System.out.println("KYC and Spot Balance process completed.");
     }
@@ -111,11 +118,11 @@ public class KycAndSpot {
     // Main method for independent execution
     public static void main(String[] args) {
 //        WebDriver driver = new ChromeDriver();
-        WebDriver driver = new EdgeDriver();
+        WebDriver driver = new ChromeDriver();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         // Define input values for manual execution
-        String uid = "744584";             // Set UID if available, or leave blank if using email
+        String uid = "303591";             // Set UID if available, or leave blank if using email
         String email = ""; // Set email if UID is not used
         String spotBalanceAmount = "5000"; // Spot balance amount to be updated
 

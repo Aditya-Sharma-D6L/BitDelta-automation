@@ -13,12 +13,12 @@ import java.time.Duration;
 public class Login {
 
     // GENERAL DETAILS AND CREDENTIALS
-    private static final String EMAIL = "mtaditya2@yopmail.com";
+    private static final String EMAIL = "copt2@yopmail.com";
     private static final String PASSWORD = "Pass@12345";
-    public static final String ENV = "staging";
+    public static final String ENV = "qa";
 
     // COPY TRADING DETAILS
-    private static final boolean applyForMasterTrader = false;
+    private static final boolean applyForMasterTrader = true;
     private static final boolean transferFromSpotToDerivatives = false;
 
     // SPOT ORDER DETAILS
@@ -30,10 +30,10 @@ public class Login {
     private static final String amount = "15"; // This is the $ amount sent to the input fields in the market order for buy/sell
 
     // DERIVATIVES ORDER DETAILS
-    private static final boolean placeDerivativesOrders = true;
+    private static final boolean placeDerivativesOrders = false;
     private static final String DSELL = "sell";
     private static final String DBUY = "buy";
-    private static final int derivativesOrderCount = 5;
+    private static final int derivativesOrderCount = 10;
     private static final String derivativesOrderType = DBUY;
 
     private static final String BASE_URL = "https://" + ENV + ".bitdelta.com/en/";
