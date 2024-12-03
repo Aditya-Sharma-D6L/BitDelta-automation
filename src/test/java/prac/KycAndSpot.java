@@ -16,7 +16,7 @@ public class KycAndSpot {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    private static final String env = "qa";
+    private static final String env = "eks";
 
     private static final boolean approveKyc = true;
     private static final boolean approveSpotBalance = true;
@@ -71,12 +71,15 @@ public class KycAndSpot {
     private void loginToAdmin() throws InterruptedException {
 
         String adminEmail = "";
+        String adminPassword = "";
+
         if (env.equals("staging")) {
             adminEmail = "ashutosh.parihar@delta6labs.com";
+            adminPassword = "Pass@12345";
         } else if (env.equals("qa")) {
             adminEmail = "laxman.kumar@bitdelta.com";
+            adminPassword = "Pass@1234567";
         }
-        String adminPassword = "Pass@12345";
 
         // Enter admin email and password
         driver.findElement(By.xpath("//input[@placeholder='Email']")).sendKeys(adminEmail);
@@ -122,9 +125,9 @@ public class KycAndSpot {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         // Define input values for manual execution
-        String uid = "303591";             // Set UID if available, or leave blank if using email
+        String uid = "304946";             // Set UID if available, or leave blank if using email
         String email = ""; // Set email if UID is not used
-        String spotBalanceAmount = "5000"; // Spot balance amount to be updated
+        String spotBalanceAmount = "100000"; // Spot balance amount to be updated
 
         try {
             driver.get(adminUrl); // Open admin login page

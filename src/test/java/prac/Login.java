@@ -13,21 +13,22 @@ import java.time.Duration;
 public class Login {
 
     // GENERAL DETAILS AND CREDENTIALS
-    private static final String EMAIL = "copt2@yopmail.com";
+//    private static final String EMAIL = "bctmaster44@yopmail.com";
+    private static final String EMAIL = "corp4@yopmail.com";
     private static final String PASSWORD = "Pass@12345";
     public static final String ENV = "qa";
 
     // COPY TRADING DETAILS
-    private static final boolean applyForMasterTrader = true;
+    private static final boolean applyForMasterTrader = false;
     private static final boolean transferFromSpotToDerivatives = false;
 
     // SPOT ORDER DETAILS
     private static final boolean placeSpotOrders = false;
     private static final String SELL = "sell";
     private static final String BUY = "buy";
-    private static final int spotOrderCount = 5;
+    private static final int spotOrderCount = 1;
     private static final String spotOrderType = BUY;
-    private static final String amount = "15"; // This is the $ amount sent to the input fields in the market order for buy/sell
+    private static final String amount = "7000"; // This is the $ amount sent to the input fields in the market order for buy/sell
 
     // DERIVATIVES ORDER DETAILS
     private static final boolean placeDerivativesOrders = false;
@@ -44,7 +45,7 @@ public class Login {
 
     public Login() {
         this.driver = new ChromeDriver();
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         driver.manage().window().maximize();
     }
 
@@ -150,24 +151,30 @@ public class Login {
         try {
             try {
 //                WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
-                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+//                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(3))
+                        .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+
 
                 // Ensure the element is scrolled into view before clicking
                 ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
 
                 scrollButton.click();
             } catch (NoSuchElementException | TimeoutException e) {
-
-                Thread.sleep(1000);
-
-                WebElement checkBox = driver.findElement(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']"));
-                checkBox.click();
-
-                WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
-                acceptButton.click();
+                // means scroll button is not present in the TnC popup
+                // continue
             }
+
+            Thread.sleep(1000);
+
+            WebElement checkBox = driver.findElement(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']"));
+            checkBox.click();
+
+            WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
+            acceptButton.click();
+
         } catch (Exception e) {
-            System.out.println("TnC not found, continuing...");
+            System.out.println("TnC popup not found.");
         }
     }
 
@@ -179,7 +186,7 @@ public class Login {
                 pinInputField.sendKeys(String.valueOf(i + 1));  // Sample OTP entry for demonstration
             }
         } catch (Exception e) {
-            System.out.println("Error while entering OTP: " + e.getMessage());
+//            System.out.println("Error while entering OTP: " + e.getMessage());
         }
     }
 
@@ -190,9 +197,9 @@ public class Login {
             survey.fillAdditionalQuestions();
             System.out.println("General Survey Completed.");
         } catch (NoSuchElementException | TimeoutException e) {
-            System.out.println("General Survey already filled, continuing...");
+            System.out.println("General Survey already filled");
         } catch (Exception e) {
-            System.out.println("An error occurred while attempting to fill out the survey or survey is already filled.");
+            System.out.println("An error occurred while attempting to fill out the survey or survey might be already filled.");
         }
     }
 

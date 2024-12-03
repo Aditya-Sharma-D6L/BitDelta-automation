@@ -2,6 +2,7 @@ package prac;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.net.UrlChecker;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -11,10 +12,10 @@ public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
 
-     static String email = "rewardbonus1@yopmail.com";
-//    static String email = "profile3@yopmail.com";
+     static String email = "corp4@yopmail.com";
     static String password = "Pass@12345";
     static String country = "";
+    String userType = ""; // if this value is empty, then "Individual" user will be created
 
     static String referralCode = "";
     static boolean signUpWithReferral = false;
@@ -23,7 +24,7 @@ public class Signup {
     protected boolean initiateKYCAndSpot = false;  // Set to true by default
     static String spotBalance = "8000";
 
-    static String env = "staging";
+    static String env = "qa";
 
     private static final String REGISTER_URL = "https://" + env + ".bitdelta.com/en/register";
     private final WebDriver driver;
@@ -31,7 +32,7 @@ public class Signup {
 
     public Signup() {
         this.driver = new ChromeDriver();
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -55,7 +56,7 @@ public class Signup {
         toggleTheme.click();
         Thread.sleep(1000);
 
-        enterCredentials(email, password, country, signUpWithReferral, referralCode);
+        enterCredentials(email, password, country, userType, signUpWithReferral, referralCode);
         submitRegistrationForm();
 
 //        Thread.sleep(1000);
@@ -70,7 +71,6 @@ public class Signup {
         // another TnC comes after signup, before general survey
         handleTnCPopup();
 
-//        Thread.sleep(2000);
         fillGeneralSurvey();
 
         Thread.sleep(2000);
@@ -81,12 +81,16 @@ public class Signup {
         }
     }
 
-    private void enterCredentials(String email, String password, String country, boolean signUpWithReferral, String referralCode) {
+    private void enterCredentials(String email, String password, String country, String userType, boolean signUpWithReferral, String referralCode) {
 
         if (!country.isEmpty()) {
             driver.findElement(By.xpath("//input[@role='combobox']")).sendKeys(country);
             WebElement selectCountry = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='" + country + "']")));
             selectCountry.click();
+        }
+
+        if (!userType.isEmpty()) {
+            driver.findElement(By.xpath("//div[text()='Corporate']")).click();
         }
 
         driver.findElement(By.xpath("//input[@placeholder='Email']")).sendKeys(email);
@@ -110,7 +114,10 @@ public class Signup {
         try {
             try {
 //                WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
-                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+//                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(3))
+                        .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+
 
                 // Ensure the element is scrolled into view before clicking
                 ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
@@ -149,9 +156,19 @@ public class Signup {
         int attempts = 0;
         while (!clicked && attempts < 3) {
             try {
+                Thread.sleep(500);
                 driver.findElement(By.xpath("//button[@type='button' and text()='Verify']")).click();
+
+                Thread.sleep(1000);
+                WebElement uiErrorOtpRequired = driver.findElement(By.id("field-:r8:-feedback"));
+                if (uiErrorOtpRequired.isDisplayed()) {
+                    clicked = false;
+                    return;
+                }
+
                 clicked = true;
-            } catch (NoSuchElementException e) {
+
+            } catch (NoSuchElementException | TimeoutException e) {
                 attempts++;
                 Thread.sleep(500); // Adjust wait time as needed
             }
