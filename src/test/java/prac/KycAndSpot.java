@@ -5,7 +5,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WindowType;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -16,7 +15,7 @@ public class KycAndSpot {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    private static final String env = "eks";
+    private static final String env = "qa";
 
     private static final boolean approveKyc = true;
     private static final boolean approveSpotBalance = true;
@@ -115,19 +114,17 @@ public class KycAndSpot {
         Thread.sleep(2000);
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[text()='" + email + "']/preceding::td[2]/a"))).click(); // Open profile by email
-        //table//td[text()='%s']/preceding-sibling::td/a[@class='link']
     }
 
     // Main method for independent execution
     public static void main(String[] args) {
-//        WebDriver driver = new ChromeDriver();
+
         WebDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         // Define input values for manual execution
-        String uid = "304946";             // Set UID if available, or leave blank if using email
+        String uid = "305689";             // Set UID if available, or leave blank if using email
         String email = ""; // Set email if UID is not used
-        String spotBalanceAmount = "100000"; // Spot balance amount to be updated
+        String spotBalanceAmount = "8000"; // Spot balance amount to be updated
 
         try {
             driver.get(adminUrl); // Open admin login page

@@ -152,7 +152,7 @@ public class Login {
             try {
 //                WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
 //                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
-                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(3))
+                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
                         .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
 
 

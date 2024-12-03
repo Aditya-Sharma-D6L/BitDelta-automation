@@ -12,16 +12,16 @@ public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
 
-     static String email = "corp4@yopmail.com";
+     static String email = "corp6@yopmail.com";
     static String password = "Pass@12345";
-    static String country = "";
+    static String country = "Hungary";
     String userType = ""; // if this value is empty, then "Individual" user will be created
 
     static String referralCode = "";
     static boolean signUpWithReferral = false;
 
     // Control variable for initiating KYC and Spot Balance
-    protected boolean initiateKYCAndSpot = false;  // Set to true by default
+    protected boolean initiateKYCAndSpot = true;  // Set to true by default
     static String spotBalance = "8000";
 
     static String env = "qa";
@@ -59,7 +59,6 @@ public class Signup {
         enterCredentials(email, password, country, userType, signUpWithReferral, referralCode);
         submitRegistrationForm();
 
-//        Thread.sleep(1000);
         handleTnCPopup();
 
         // wait 3 seconds for captcha
@@ -115,7 +114,7 @@ public class Signup {
             try {
 //                WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
 //                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
-                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(3))
+                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
                         .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
 
 
