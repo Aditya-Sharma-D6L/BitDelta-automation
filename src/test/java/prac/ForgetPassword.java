@@ -18,12 +18,13 @@ public class ForgetPassword {
 
         WebDriver driver = new ChromeDriver();
 
-        String baseUrl = "https://staging.bitdelta.com/en/";
+        String baseUrl = "https://qa.bitdelta.com/en/";
 
-        String email = "bitdeltauser@yopmail.com";
+        String email = "fcn1@yopmail.com";
         String password = "Pass@123456";
 
         driver.get(baseUrl + "forgot-password");
+        driver.manage().window().maximize();
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
@@ -38,6 +39,35 @@ public class ForgetPassword {
         // enter OTP
         handleOTP(driver, email);
     }
+/*
+    private void handleTnCPopup() {
+        try {
+            WebElement checkBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']")));
+            checkBox.click();
+
+            try {
+                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
+                        .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+
+                // Ensure the element is scrolled into view before clicking
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
+
+                scrollButton.click();
+            } catch (NoSuchElementException | TimeoutException e) {
+                // means scroll button is not present in the TnC popup
+                // continue
+            }
+
+            Thread.sleep(1000);
+            WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
+            acceptButton.click();
+
+        } catch (Exception e) {
+            System.out.println("TnC popup not found.");
+        }
+    }
+*/
+
 
     private static void handleOTP(WebDriver driver, String email) {
         try {

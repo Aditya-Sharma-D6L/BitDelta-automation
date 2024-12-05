@@ -2,7 +2,6 @@ package prac;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.net.UrlChecker;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -12,19 +11,19 @@ public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
 
-     static String email = "corp6@yopmail.com";
+    static String email = "stguser2@yopmail.com";
     static String password = "Pass@12345";
-    static String country = "Hungary";
+    static String country = "";
     String userType = ""; // if this value is empty, then "Individual" user will be created
 
     static String referralCode = "";
     static boolean signUpWithReferral = false;
 
     // Control variable for initiating KYC and Spot Balance
-    protected boolean initiateKYCAndSpot = true;  // Set to true by default
-    static String spotBalance = "8000";
+    protected boolean initiateKYCAndSpot = false;  // Set to true by default
+    static String spotBalance = "5000";
 
-    static String env = "qa";
+    static String env = "staging";
 
     private static final String REGISTER_URL = "https://" + env + ".bitdelta.com/en/register";
     private final WebDriver driver;
@@ -48,6 +47,9 @@ public class Signup {
     public void registerUser(String email, String password, String country, boolean signUpWithReferral, String referralCode, String spotBalanceAmount) throws InterruptedException {
         driver.get(REGISTER_URL);
         driver.manage().window().maximize();
+
+        // handle platform TnC if it is active
+        handleTnCPopup();
 
         Thread.sleep(2000);
 
@@ -111,27 +113,23 @@ public class Signup {
 
     private void handleTnCPopup() {
         try {
-            try {
-//                WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
-//                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
-                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
-                        .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
-
-
-                // Ensure the element is scrolled into view before clicking
-                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
-
-                scrollButton.click();
-            } catch (NoSuchElementException | TimeoutException e) {
-                // means scroll button is not present in the TnC popup
-                // continue
-            }
-
-                Thread.sleep(1000);
-
-                WebElement checkBox = driver.findElement(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']"));
+                WebElement checkBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']")));
                 checkBox.click();
 
+                try {
+                    WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
+                            .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+
+                    // Ensure the element is scrolled into view before clicking
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
+
+                    scrollButton.click();
+                } catch (NoSuchElementException | TimeoutException e) {
+                    // means scroll button is not present in the TnC popup
+                    // continue
+                }
+
+                Thread.sleep(1000);
                 WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
                 acceptButton.click();
 
