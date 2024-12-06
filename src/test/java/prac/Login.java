@@ -14,7 +14,7 @@ public class Login {
 
     // GENERAL DETAILS AND CREDENTIALS
 //    private static final String EMAIL = "bctmaster44@yopmail.com";
-    private static final String EMAIL = "copt1@yopmail.com";
+    private static final String EMAIL = "pn1@yopmail.com";
     private static final String PASSWORD = "Pass@12345";
     public static final String ENV = "qa";
 

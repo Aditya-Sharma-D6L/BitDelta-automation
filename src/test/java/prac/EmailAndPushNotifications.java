@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.*;
 import java.time.Duration;
+import java.util.Scanner;
 
 public class EmailAndPushNotifications {
 
@@ -30,7 +31,13 @@ public class EmailAndPushNotifications {
         String targetUsers = "all"; // all -> all users || specific -> specific users || other -> other options
         String pushTopic = "NEWS"; // SYSTEM || NEWS || PRICE
         String redirectionPlace = "screen"; // url -> to send on web || screen -> to send in mobile
-        String redirectScreen = "market";  // home, market, spot, derivatives, wallet
+        String redirectScreen = "home";  // home, market, spot, derivatives, wallet
+        String[] emails = {"fcn@yopmail.com", "testfcm12@yopmail.com", "copt1@yopmail.com"};
+
+        int attempts = 1;
+        boolean flag = true;
+
+        int count = 0;
 
         driver.get(adminUrl);
         performAdminLogin();
@@ -41,25 +48,54 @@ public class EmailAndPushNotifications {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='Notification']")));
 
         // Perform push/email notifications
-        pushNotification(notificationType, targetUsers, pushTopic, redirectionPlace, redirectScreen);
+        Scanner sc = new Scanner(System.in);
+
+//        while (attempts > count) {
+        while (flag) {
+            pushNotification(notificationType, targetUsers, pushTopic, redirectionPlace, redirectScreen, emails);
+            Thread.sleep(500);
+//            count++;
+
+            System.out.println("Do you want to send the same notification again? y/n: ");
+            String choice = sc.nextLine();
+
+            if (choice.equals("n")) {
+                flag = false;
+            } else {
+                System.out.println("Push Notification Process quit");
+            }
+        }
     }
 
-    private void pushNotification(String notificationType, String targetUsers, String pushTopic, String redirectionPlace, String redirectScreen) {
+    private void pushNotification(String notificationType, String targetUsers, String pushTopic, String redirectionPlace, String redirectScreen, String[] emails) throws InterruptedException {
         driver.findElement(By.xpath("(//select)[1]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + notificationType + "']"))).click();
 
         driver.findElement(By.xpath("(//select)[2]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + targetUsers + "']"))).click();
 
-        driver.findElement(By.xpath("(//select)[3]")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + pushTopic + "']"))).click();
+        if (targetUsers.equals("all")) {
+            driver.findElement(By.xpath("(//select)[3]")).click();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + pushTopic + "']"))).click();
+        } else if (targetUsers.equals("specific")) {
+//            String email = "fcn@yopmail.com";
+            WebElement emailBox = wait.until(ExpectedConditions.elementToBeClickable( By.xpath("//div[@class='border-t border-gray-200']//div[3]//textarea[1]")));
+            emailBox.click();
+            System.out.println(emailBox.isDisplayed());
+            for (String email : emails) {
+                emailBox.sendKeys(email + ", ");
+            }
+        }
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter title here']"))).sendKeys("News: Test title for " + targetUsers + " users");
+        // Enter title
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter title here']"))).sendKeys(pushTopic + ": Test title for " + targetUsers + " users");
 
+        // Enter body
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Enter content here...']")))
-                .sendKeys("News: Test content/body for " + targetUsers + " users. Lorem Ipsum...");
+                .sendKeys(pushTopic + ": Test content/body for " + targetUsers + " users. Lorem Ipsum...");
 
-        driver.findElement(By.xpath("(//select)[4]")).click();
+        // select Redirection place
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[normalize-space()='Redirection Place']/following-sibling::*[1]"))).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + redirectionPlace + "']"))).click();
 
         if (redirectionPlace.equals("url")) {
@@ -68,7 +104,7 @@ public class EmailAndPushNotifications {
         }
 
         if (redirectionPlace.equals("screen")) {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//select)[5]"))).click();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[normalize-space()='Redirect Screen']/following-sibling::*[1]"))).click();
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + redirectScreen + "']"))).click();
         }
 

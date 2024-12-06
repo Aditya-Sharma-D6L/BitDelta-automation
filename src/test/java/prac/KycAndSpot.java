@@ -17,8 +17,8 @@ public class KycAndSpot {
     private static final boolean approveKyc = true;
     private static final boolean approveSpotBalance = true;
 
-//    static String adminUrl = "https://" + env + "-admin.bitdelta.com/login";
-    static String adminUrl = "https://admin-eks.bitdelta.com/users";
+    static String adminUrl = "https://" + env + "-admin.bitdelta.com/login";
+//    static String adminUrl = "https://admin-eks.bitdelta.com/users";
 
     public KycAndSpot(WebDriver driver) {
         this.driver = driver;
@@ -127,9 +127,9 @@ public class KycAndSpot {
         WebDriver driver = new ChromeDriver();
 
         // Define input values for manual execution
-        String uid = "";             // Set UID if available, or leave blank if using email
-        String email = "eksuser1@yopmail.com"; // Set email if UID is not used
-        String spotBalanceAmount = "8000"; // Spot balance amount to be updated
+        String uid = "305755";             // Set UID if available, or leave blank if using email
+        String email = ""; // Set email if UID is not used
+        String spotBalanceAmount = "5000"; // Spot balance amount to be updated
 
         try {
             driver.get(adminUrl); // Open admin login page

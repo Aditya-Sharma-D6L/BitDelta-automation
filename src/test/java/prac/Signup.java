@@ -11,7 +11,7 @@ public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
 
-    static String email = "stguser2@yopmail.com";
+    static String email = "pn1@yopmail.com";
     static String password = "Pass@12345";
     static String country = "";
     String userType = ""; // if this value is empty, then "Individual" user will be created
@@ -20,10 +20,10 @@ public class Signup {
     static boolean signUpWithReferral = false;
 
     // Control variable for initiating KYC and Spot Balance
-    protected boolean initiateKYCAndSpot = false;  // Set to true by default
+    protected boolean initiateKYCAndSpot = true;  // Set to true by default
     static String spotBalance = "5000";
 
-    static String env = "staging";
+    static String env = "qa";
 
     private static final String REGISTER_URL = "https://" + env + ".bitdelta.com/en/register";
     private final WebDriver driver;
@@ -49,7 +49,7 @@ public class Signup {
         driver.manage().window().maximize();
 
         // handle platform TnC if it is active
-        handleTnCPopup();
+//        handleTnCPopup();
 
         Thread.sleep(2000);
 
