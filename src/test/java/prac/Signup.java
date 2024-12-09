@@ -11,16 +11,16 @@ public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
 
-    static String email = "pn1@yopmail.com";
+    static String email = "pn2@yopmail.com";
     static String password = "Pass@12345";
-    static String country = "";
+    static String country = "Finland";
     String userType = ""; // if this value is empty, then "Individual" user will be created
 
     static String referralCode = "";
     static boolean signUpWithReferral = false;
 
     // Control variable for initiating KYC and Spot Balance
-    protected boolean initiateKYCAndSpot = true;  // Set to true by default
+    protected boolean initiateKYCAndSpot = false;  // Set to true by default
     static String spotBalance = "5000";
 
     static String env = "qa";

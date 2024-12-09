@@ -7,7 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.*;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Scanner;
 
@@ -28,16 +28,17 @@ public class EmailAndPushNotifications {
         driver.manage().window().maximize();
 
         String notificationType = "notification"; // notification -> push notification || email -> email notification
-        String targetUsers = "all"; // all -> all users || specific -> specific users || other -> other options
-        String pushTopic = "NEWS"; // SYSTEM || NEWS || PRICE
+        String targetUsers = "specific"; // all -> all users || specific -> specific users || other -> other options
+        String pushTopic = "SYSTEM"; // SYSTEM || NEWS || PRICE
         String redirectionPlace = "screen"; // url -> to send on web || screen -> to send in mobile
-        String redirectScreen = "home";  // home, market, spot, derivatives, wallet
-        String[] emails = {"fcn@yopmail.com", "testfcm12@yopmail.com", "copt1@yopmail.com"};
+        String url = "https://www.ndtv.com/india-news/maharashtra-oath-ceremony-live-updates-devendra-fadnavis-to-be-sworn-in-as-maharashtra-chief-minister-pm-modi-to-attend-7176368";
+        String redirectScreen = "wallet";  // home, market, spot, derivatives, wallet
+        String[] emails = {"copt1@yopmail.com", "pn2@yopmail.com"};
 
-        int attempts = 1;
-        boolean flag = true;
+        int attempts = 3;
+        boolean flag = false;
 
-        int count = 0;
+        Integer count = 1;
 
         driver.get(adminUrl);
         performAdminLogin();
@@ -50,24 +51,25 @@ public class EmailAndPushNotifications {
         // Perform push/email notifications
         Scanner sc = new Scanner(System.in);
 
-//        while (attempts > count) {
-        while (flag) {
-            pushNotification(notificationType, targetUsers, pushTopic, redirectionPlace, redirectScreen, emails);
+        while (attempts >= count) {
+//        while (flag) {
+            pushNotification(notificationType, targetUsers, pushTopic, redirectionPlace, redirectScreen, emails, url, count);
             Thread.sleep(500);
-//            count++;
+            count++;
 
-            System.out.println("Do you want to send the same notification again? y/n: ");
-            String choice = sc.nextLine();
+            if (flag) {
+                System.out.println("Do you want to send the same notification again? y/n: ");
+                String choice = sc.nextLine();
 
-            if (choice.equals("n")) {
-                flag = false;
-            } else {
-                System.out.println("Push Notification Process quit");
+                if (choice.equals("n")) {
+                    flag = false;
+                }
+                return;
             }
         }
     }
 
-    private void pushNotification(String notificationType, String targetUsers, String pushTopic, String redirectionPlace, String redirectScreen, String[] emails) throws InterruptedException {
+    private void pushNotification(String notificationType, String targetUsers, String pushTopic, String redirectionPlace, String redirectScreen, String[] emails, String url, Integer count) throws InterruptedException {
         driver.findElement(By.xpath("(//select)[1]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + notificationType + "']"))).click();
 
@@ -78,21 +80,34 @@ public class EmailAndPushNotifications {
             driver.findElement(By.xpath("(//select)[3]")).click();
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + pushTopic + "']"))).click();
         } else if (targetUsers.equals("specific")) {
-//            String email = "fcn@yopmail.com";
-            WebElement emailBox = wait.until(ExpectedConditions.elementToBeClickable( By.xpath("//div[@class='border-t border-gray-200']//div[3]//textarea[1]")));
+            WebElement emailBox = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='border-t border-gray-200']//div[3]//textarea[1]")));
             emailBox.click();
-            System.out.println(emailBox.isDisplayed());
+
             for (String email : emails) {
-                emailBox.sendKeys(email + ", ");
+                emailBox.sendKeys(email + ",");
+                Thread.sleep(300);
             }
         }
 
         // Enter title
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter title here']"))).sendKeys(pushTopic + ": Test title for " + targetUsers + " users");
+        String title;
+        WebElement inputField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter title here']")));
+
+        if ("specific".equals(targetUsers) && (count == null || count == 0)) {
+            title = "SPECIFIC: Test title for specific users";
+        } else if ("specific".equals(targetUsers)) {
+            title = "SPECIFIC: Test title " + count + " for specific users";
+        } else if ("all".equals(targetUsers) && count != null && count > 0) {
+            title = pushTopic + " - " + redirectScreen.toUpperCase() + " Screen " + count + ": Test title for all users";
+        } else {
+            title = pushTopic + " - " + redirectScreen.toUpperCase() + " Screen: Test title for all users";
+        }
+        inputField.sendKeys(title);
+
 
         // Enter body
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Enter content here...']")))
-                .sendKeys(pushTopic + ": Test content/body for " + targetUsers + " users. Lorem Ipsum...");
+                .sendKeys(pushTopic + ": Test content/body for " + redirectScreen.toUpperCase() + " for " + targetUsers + " users.");
 
         // select Redirection place
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[normalize-space()='Redirection Place']/following-sibling::*[1]"))).click();
@@ -100,7 +115,7 @@ public class EmailAndPushNotifications {
 
         if (redirectionPlace.equals("url")) {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter a valid URL']")))
-                    .sendKeys("https://qa.bitdelta.com/en/trade/spot/btc-usdt");
+                    .sendKeys(url);
         }
 
         if (redirectionPlace.equals("screen")) {

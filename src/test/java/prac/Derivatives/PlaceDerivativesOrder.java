@@ -33,19 +33,21 @@ public class PlaceDerivativesOrder {
     public void completeDerivativesQuiz() throws InterruptedException {
         DerivativesQuiz quiz = new DerivativesQuiz(driver);
         quiz.performDerivativesQuiz(driver);
+
+        handleTnCPopup();
     }
 
     private boolean checkIfAlreadyOrderPlacedInHedgingMode () {
         boolean flag = true;
 
         System.out.println("Looking for old hedging order records...");
-        // go to the "Trade History" tab and look for hedging orders
+        // go to the "Trade History" tab and look for closed hedging orders
         WebElement tradeHistory = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@type='button' and text()='Trade History']")));
         tradeHistory.click();
 
         try {
             // check if closed hedging orders exists or not
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='tabs-:r11:--tabpanel-3']/div//div[text()='HEDGING']")));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='tabs-:r11:--tabpanel-3']/div//div[text()='HEDGING']/ancestor::div//div//p[text()='Close']")));
 
         } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("No Hedging order(s) found");
@@ -72,6 +74,10 @@ public class PlaceDerivativesOrder {
                 Thread.sleep(2000);
                 // go back to the derivatives page
                 driver.get("https://" + env + ".bitdelta.com/en/trade/derivatives/btc-usd");
+
+                // accept Derivatives TnC if visible
+                handleTnCPopup();
+
             }
         } catch (NoSuchElementException | TimeoutException e) {
             // do nothing, proceed...
@@ -120,6 +126,9 @@ public class PlaceDerivativesOrder {
 
         // check if user has already placed a market order in Hedging mode
         if (status) {
+
+            handleTnCPopup();
+
             checkDerivativesFunds(env);
 
             // check if closed hedging orders are present
@@ -205,6 +214,37 @@ public class PlaceDerivativesOrder {
             // click "Close" button in confirmation popup
             WebElement closeButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[normalize-space()='Close']")));
             closeButton.click();
+        }
+    }
+
+    private void handleTnCPopup() {
+        try {
+            try {
+//                WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
+//                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
+                        .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+
+
+                // Ensure the element is scrolled into view before clicking
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
+
+                scrollButton.click();
+            } catch (NoSuchElementException | TimeoutException e) {
+                // means scroll button is not present in the TnC popup
+                // continue
+            }
+
+            Thread.sleep(1000);
+
+            WebElement checkBox = driver.findElement(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']"));
+            checkBox.click();
+
+            WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
+            acceptButton.click();
+
+        } catch (Exception e) {
+            System.out.println("TnC popup not found.");
         }
     }
 

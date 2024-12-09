@@ -31,7 +31,7 @@ public class Login {
     private static final String amount = "7000"; // This is the $ amount sent to the input fields in the market order for buy/sell
 
     // DERIVATIVES ORDER DETAILS
-    private static final boolean placeDerivativesOrders = false;
+    private static final boolean placeDerivativesOrders = true;
     private static final String DSELL = "sell";
     private static final String DBUY = "buy";
     private static final int derivativesOrderCount = 10;
@@ -45,7 +45,7 @@ public class Login {
 
     public Login() {
         this.driver = new ChromeDriver();
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(7));
         driver.manage().window().maximize();
     }
 
