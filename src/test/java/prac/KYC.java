@@ -53,7 +53,7 @@ public class KYC {
     public void approveKYC(String env) throws InterruptedException {
 
         // click on "Dashboard"
-        WebElement dashboard = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='top-menu__title'][normalize-space()='Dashboard']")));
+        WebElement dashboard = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div//span[text()='Dashboard']")));
         dashboard.click();
 
         // Click on "KYC Actions"

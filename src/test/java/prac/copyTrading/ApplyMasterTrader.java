@@ -13,10 +13,10 @@ public class ApplyMasterTrader {
 
     public ApplyMasterTrader(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
 
-    public void goToCopyTrading () throws InterruptedException {
+    public void goToCopyTrading() throws InterruptedException {
 
         // click on "Copy Trading" in header
         WebElement clickCopyTrading = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[contains(text(), 'Copy Trading')]")));
@@ -101,7 +101,7 @@ public class ApplyMasterTrader {
         return flag;
     }
 
-    private void goToDashboard () throws InterruptedException {
+    private void goToDashboard() throws InterruptedException {
         Thread.sleep(1000);
         WebElement goToDashBoard = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@type='button' and text()='Go to Dashboard']")));
         goToDashBoard.click();
@@ -109,28 +109,32 @@ public class ApplyMasterTrader {
 
     private void handleTnCPopup() {
         try {
+            try {
+//                WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
+//                WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
+                        .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
 
-//            WebElement scrollButton = driver.findElement(By.xpath("//div[contains(text(),'Scroll Down')]"));
-            WebElement scrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
 
-            // Ensure the element is scrolled into view before clicking
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
+                // Ensure the element is scrolled into view before clicking
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
 
-            scrollButton.click();
+                scrollButton.click();
+            } catch (NoSuchElementException | TimeoutException e) {
+                // means scroll button is not present in the TnC popup
+                // continue
+            }
+
             Thread.sleep(1000);
 
-            // click checkbox to agree TnC
-//            driver.findElement(By.xpath("//input[@type='checkbox']")).click();
             WebElement checkBox = driver.findElement(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']"));
             checkBox.click();
 
             WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
             acceptButton.click();
-        } catch (NoSuchElementException e) {
-            System.out.println("TnC already accepted");
-        }
-        catch (Exception e) {
-            System.out.println("TnC popup not found or could not be handled.");
+
+        } catch (Exception e) {
+            System.out.println("TnC popup not found.");
         }
     }
 

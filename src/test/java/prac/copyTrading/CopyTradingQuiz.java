@@ -46,36 +46,41 @@ public class CopyTradingQuiz {
             q2.click();
             nextButton.click();
 
-            // Question 3 - "Can you manually manage the copied position of the master?"
-            WebElement q3 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_3_ANSWER_3']")));
+            // Question 3 - "How does the fixed amount copying work?"
+            WebElement q3 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_5_ANSWER_3']")));
             q3.click();
             nextButton.click();
 
-            // Question 4 - "How does the fixed percentage copying work?"
-            WebElement q4 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_4_ANSWER_1']")));
+            // Question 4 - "What are the fees to be levied in copy trading?"
+            WebElement q4 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_6_ANSWER_3']")));
             q4.click();
             nextButton.click();
 
-            // Question 5 - "What are the fees to be levied in copy trading?"
-            WebElement q5 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_6_ANSWER_3']")));
+            // Question 5 - "What will happen in the case of insufficient margin while copying a trade?"
+            WebElement q5 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_7_ANSWER_2']")));
             q5.click();
             nextButton.click();
 
-            // Question 6 - "What will happen in the case of insufficient margin while copying a trade?"
-            WebElement q6 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_7_ANSWER_2']")));
+            // Question 6 - "How will copying multiple masters impact your current positions/balance allocated to copy trading?"
+            WebElement q6 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_8_ANSWER_1']")));
             q6.click();
             nextButton.click();
 
-            // Question 5 - "How will copying multiple masters impact your current positions/balance allocated to copy trading?"
-            WebElement q7 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_8_ANSWER_1']")));
+            // Question 7 - "Can you manually manage the copied position of the master?"
+            WebElement q7 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_3_ANSWER_3']")));
             q7.click();
+            nextButton.click();
+
+            // Question 8 - "How does the fixed percentage copying work?"
+            WebElement q8 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='COPY_TRADING_QUESTION_4_ANSWER_1']")));
+            q8.click();
             nextButton.click();
 
             // click "Submit" after quiz
             Thread.sleep(1500);
-            WebElement submit = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='submit' and text()='Submit']")));
-            submit.click();
-            Thread.sleep(3000);
+            WebElement startCopyTrading = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@type='button' and text()='Start Copy Trading']")));
+            startCopyTrading.click();
+            Thread.sleep(1000);
 
         } catch (NoSuchElementException e) {
             System.out.println("No Quiz found: Looks like CT Quiz has been done.");

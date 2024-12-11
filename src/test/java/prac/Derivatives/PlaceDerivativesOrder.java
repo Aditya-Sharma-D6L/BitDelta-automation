@@ -28,16 +28,15 @@ public class PlaceDerivativesOrder {
         goToDerivativesPage.click();
         System.out.println("Going to derivatives page...");
         Thread.sleep(2000);
+
     }
 
     public void completeDerivativesQuiz() throws InterruptedException {
         DerivativesQuiz quiz = new DerivativesQuiz(driver);
         quiz.performDerivativesQuiz(driver);
-
-        handleTnCPopup();
     }
 
-    private boolean checkIfAlreadyOrderPlacedInHedgingMode () {
+    private boolean checkIfAlreadyOrderPlacedInHedgingMode() {
         boolean flag = true;
 
         System.out.println("Looking for old hedging order records...");
@@ -60,7 +59,7 @@ public class PlaceDerivativesOrder {
     }
 
     // This method check if user has sufficient available balance in derivatives
-    private void checkDerivativesFunds (String env) throws InterruptedException {
+    private void checkDerivativesFunds(String env) throws InterruptedException {
 
         try {
             // look for the "Add Funds" popup
@@ -76,7 +75,7 @@ public class PlaceDerivativesOrder {
                 driver.get("https://" + env + ".bitdelta.com/en/trade/derivatives/btc-usd");
 
                 // accept Derivatives TnC if visible
-                handleTnCPopup();
+//                handleTnCPopup();
 
             }
         } catch (NoSuchElementException | TimeoutException e) {

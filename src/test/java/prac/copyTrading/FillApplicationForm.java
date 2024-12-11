@@ -5,9 +5,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
-import java.util.Random;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class FillApplicationForm {
@@ -15,7 +16,7 @@ public class FillApplicationForm {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    public FillApplicationForm (WebDriver driver) {
+    public FillApplicationForm(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
@@ -35,7 +36,7 @@ public class FillApplicationForm {
         uploadImage.click();
 
         // manually select an image within this time frame
-        Thread.sleep(7000);
+        Thread.sleep(8000);
 
         // fill experience
         WebElement tradingExperience = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Content']")));

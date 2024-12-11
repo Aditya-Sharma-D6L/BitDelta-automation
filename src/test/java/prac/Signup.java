@@ -11,16 +11,16 @@ public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
 
-    static String email = "pn2@yopmail.com";
+    static String email = "fcmcopier1@yopmail.com";
     static String password = "Pass@12345";
-    static String country = "Finland";
+    static String country = "";
     String userType = ""; // if this value is empty, then "Individual" user will be created
 
     static String referralCode = "";
     static boolean signUpWithReferral = false;
 
     // Control variable for initiating KYC and Spot Balance
-    protected boolean initiateKYCAndSpot = false;  // Set to true by default
+    protected boolean initiateKYCAndSpot = true;  // Set to true by default
     static String spotBalance = "5000";
 
     static String env = "qa";
@@ -113,25 +113,25 @@ public class Signup {
 
     private void handleTnCPopup() {
         try {
-                WebElement checkBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']")));
-                checkBox.click();
+            WebElement checkBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']")));
+            checkBox.click();
 
-                try {
-                    WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
-                            .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
+            try {
+                WebElement scrollButton = new WebDriverWait(driver, Duration.ofSeconds(2))
+                        .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Scroll Down')]")));
 
-                    // Ensure the element is scrolled into view before clicking
-                    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
+                // Ensure the element is scrolled into view before clicking
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", scrollButton);
 
-                    scrollButton.click();
-                } catch (NoSuchElementException | TimeoutException e) {
-                    // means scroll button is not present in the TnC popup
-                    // continue
-                }
+                scrollButton.click();
+            } catch (NoSuchElementException | TimeoutException e) {
+                // means scroll button is not present in the TnC popup
+                // continue
+            }
 
-                Thread.sleep(1000);
-                WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
-                acceptButton.click();
+            Thread.sleep(1000);
+            WebElement acceptButton = driver.findElement(By.xpath("//button[normalize-space()='Agree']"));
+            acceptButton.click();
 
         } catch (Exception e) {
             System.out.println("TnC popup not found.");

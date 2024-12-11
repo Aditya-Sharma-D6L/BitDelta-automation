@@ -127,8 +127,8 @@ public class KycAndSpot {
         WebDriver driver = new ChromeDriver();
 
         // Define input values for manual execution
-        String uid = "";             // Set UID if available, or leave blank if using email
-        String email = "pn1@yopmail.com"; // Set email if UID is not used
+        String uid = "305811";             // Set UID if available, or leave blank if using email
+        String email = ""; // Set email if UID is not used
         String spotBalanceAmount = "5000"; // Spot balance amount to be updated
 
         try {

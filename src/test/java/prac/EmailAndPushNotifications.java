@@ -28,17 +28,12 @@ public class EmailAndPushNotifications {
         driver.manage().window().maximize();
 
         String notificationType = "notification"; // notification -> push notification || email -> email notification
-        String targetUsers = "specific"; // all -> all users || specific -> specific users || other -> other options
+        String targetUsers = "all"; // all -> all users || specific -> specific users || other -> other options
         String pushTopic = "SYSTEM"; // SYSTEM || NEWS || PRICE
         String redirectionPlace = "screen"; // url -> to send on web || screen -> to send in mobile
         String url = "https://www.ndtv.com/india-news/maharashtra-oath-ceremony-live-updates-devendra-fadnavis-to-be-sworn-in-as-maharashtra-chief-minister-pm-modi-to-attend-7176368";
         String redirectScreen = "wallet";  // home, market, spot, derivatives, wallet
         String[] emails = {"copt1@yopmail.com", "pn2@yopmail.com"};
-
-        int attempts = 3;
-        boolean flag = false;
-
-        Integer count = 1;
 
         driver.get(adminUrl);
         performAdminLogin();
@@ -51,25 +46,37 @@ public class EmailAndPushNotifications {
         // Perform push/email notifications
         Scanner sc = new Scanner(System.in);
 
-        while (attempts >= count) {
-//        while (flag) {
-            pushNotification(notificationType, targetUsers, pushTopic, redirectionPlace, redirectScreen, emails, url, count);
-            Thread.sleep(500);
-            count++;
+        String choice = "";
+        boolean flag = true;
+        Integer maxCount = 3; //null if don't want to run loop count times
+        Integer currentCount = 1;
 
-            if (flag) {
+        do {
+            Thread.sleep(500);
+            pushNotification(notificationType, targetUsers, pushTopic, redirectionPlace, redirectScreen, emails, url, currentCount);
+
+            // If maxCount is provided, stop automatically after the specified number of iterations
+            if (maxCount != null && currentCount <= (maxCount + 1)) {
+                System.out.println("Running PN " + currentCount + " time");
+                currentCount++;
+
+                if (currentCount.equals(maxCount)) {
+                    flag = false; // Exit the loop
+                }
+            } else if (maxCount == null) {
+                // Existing functionality: Prompt the user for input
                 System.out.println("Do you want to send the same notification again? y/n: ");
-                String choice = sc.nextLine();
+                choice = sc.nextLine().trim().toLowerCase();
 
                 if (choice.equals("n")) {
                     flag = false;
                 }
-                return;
             }
-        }
+        } while (flag);
+
     }
 
-    private void pushNotification(String notificationType, String targetUsers, String pushTopic, String redirectionPlace, String redirectScreen, String[] emails, String url, Integer count) throws InterruptedException {
+    private void pushNotification(String notificationType, String targetUsers, String pushTopic, String redirectionPlace, String redirectScreen, String[] emails, String url, Integer currentCount) throws InterruptedException {
         driver.findElement(By.xpath("(//select)[1]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + notificationType + "']"))).click();
 
@@ -90,16 +97,19 @@ public class EmailAndPushNotifications {
         }
 
         // Enter title
-        String title;
+        String title = "";
         WebElement inputField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter title here']")));
 
-        if ("specific".equals(targetUsers) && (count == null || count == 0)) {
+        if ("specific".equals(targetUsers) && (currentCount == null || currentCount == 0)) {
             title = "SPECIFIC: Test title for specific users";
-        } else if ("specific".equals(targetUsers)) {
-            title = "SPECIFIC: Test title " + count + " for specific users";
-        } else if ("all".equals(targetUsers) && count != null && count > 0) {
-            title = pushTopic + " - " + redirectScreen.toUpperCase() + " Screen " + count + ": Test title for all users";
-        } else {
+        }
+        if ("specific".equals(targetUsers)) {
+            title = "SPECIFIC: Test title " + currentCount + " for specific users";
+        }
+        if ("all".equals(targetUsers) && currentCount != null && currentCount > 0) {
+            title = pushTopic + " - " + redirectScreen.toUpperCase() + " Screen " + currentCount + ": Test title for all users";
+        }
+        if ("all".equals(targetUsers)) {
             title = pushTopic + " - " + redirectScreen.toUpperCase() + " Screen: Test title for all users";
         }
         inputField.sendKeys(title);
