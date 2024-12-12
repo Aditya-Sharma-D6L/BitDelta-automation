@@ -11,13 +11,13 @@ public class Signup {
 
     // GENERAL DETAILS AND CREDENTIALS
 
-    static String email = "fcmcopier1@yopmail.com";
+    static String email = "pnreferree3@yopmail.com";
     static String password = "Pass@12345";
     static String country = "";
     String userType = ""; // if this value is empty, then "Individual" user will be created
 
-    static String referralCode = "";
     static boolean signUpWithReferral = false;
+    static String referralCode = "";
 
     // Control variable for initiating KYC and Spot Balance
     protected boolean initiateKYCAndSpot = true;  // Set to true by default

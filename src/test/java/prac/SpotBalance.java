@@ -50,7 +50,7 @@ public class SpotBalance {
         driver.findElement(By.xpath("//div[@id='editCurrencyModal']//button[@type='button'][normalize-space()='Update']")).click();
 
         // click on "Dashboard"
-        WebElement dashboard = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//nav[contains(@class, 'top-nav bg-theme-1 block')]//div[contains(text(), 'Dashboard ')]")));
+        WebElement dashboard = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div//span[text()='Dashboard']")));
         dashboard.click();
 
         // click on "Profile Overview"
