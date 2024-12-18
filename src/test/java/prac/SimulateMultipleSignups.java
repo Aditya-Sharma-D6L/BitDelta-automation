@@ -7,11 +7,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class Signup {
+public class SimulateMultipleSignups {
 
     // GENERAL DETAILS AND CREDENTIALS
 
-    static String email = "featflag2@yopmail.com";
+    static String email = "multiplesignuptest@yopmail.com";
     static String password = "Pass@12345";
     static String country = "";
     String userType = ""; // if this value is empty, then "Individual" user will be created
@@ -19,49 +19,79 @@ public class Signup {
     static boolean signUpWithReferral = false;
     static String referralCode = "";
 
-    // Control variable for initiating KYC and Spot Balance
     protected boolean initiateKYCAndSpot = false;  // Set to true by default
     static String spotBalance = "5000";
 
-    static String env = "staging";
-
-    private static final String BASE_URL = "https://" + env + ".bitdelta.com/en/";
+    static String env = "qa";
+    private static final String REGISTER_URL = "https://" + env + ".bitdelta.com/en/register";
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    public Signup() {
+    public SimulateMultipleSignups() {
         this.driver = new ChromeDriver();
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Signup signup = new Signup();
+        SimulateMultipleSignups multipleSignups = new SimulateMultipleSignups();
 
-        try {
-            signup.registerUser(email, password, country, signUpWithReferral, referralCode, spotBalance);
-        } finally {
-            signup.teardown();
+        int maxAttempts = 11;
+        int attempts = 9;
+
+        System.out.println("Initiating " + maxAttempts + " signups...");
+        while (attempts <= maxAttempts) {
+            String processedNewEmail = processEmail(email, attempts);
+
+            try {
+                boolean isSignUpComplete = multipleSignups.registerUser(processedNewEmail, password, country, signUpWithReferral, referralCode, spotBalance);
+                System.out.println("Signup " + attempts + " completed");
+                attempts++;
+
+                if (isSignUpComplete) {
+                    multipleSignups.teardown();
+                }
+
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+        }
+
+    }
+
+    // Process the email and append the attempt number (e.g. pn+1+@yopmail.com)
+    private static String processEmail(String email, int attempts) {
+        // Split the email at '@'
+        String[] parts = email.split("@");
+
+        // Check if there is a valid split
+        if (parts.length == 2) {
+            String localPart = parts[0]; // part before '@'
+            String domainPart = parts[1]; // part after '@'
+
+            // Concatenate attempt number with '+' before the domain
+            return localPart + attempts + "@" + domainPart;
+        } else {
+            return "Invalid email format";
         }
     }
 
-    public void registerUser(String email, String password, String country, boolean signUpWithReferral, String referralCode, String spotBalanceAmount) throws InterruptedException {
-        driver.get(BASE_URL);
+    public boolean registerUser(String email, String password, String country, boolean signUpWithReferral, String referralCode, String spotBalanceAmount) throws InterruptedException {
+        driver.get(REGISTER_URL);
         driver.manage().window().maximize();
 
         // handle platform TnC if it is active
-        handleTnCPopup();
+//        handleTnCPopup();
+
+        Thread.sleep(2000);
 
         // Enable dark theme
         WebElement toggleTheme = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label='Toggle theme mode']//*[name()='svg']")));
         toggleTheme.click();
         Thread.sleep(1000);
 
-        // go to register page
-        WebElement registerButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@type='button' and text()='Register']")));
-        registerButton.click();
-
         enterCredentials(email, password, country, userType, signUpWithReferral, referralCode);
-        Thread.sleep(1000);
         submitRegistrationForm();
 
         handleTnCPopup();
@@ -77,32 +107,34 @@ public class Signup {
 
         fillGeneralSurvey();
 
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
         // Execute KYC and Spot Balance initiation based on the control variable
         if (initiateKYCAndSpot) {
             initiateKYCAndSpotBalance(email, spotBalanceAmount);
         }
+
+        return true;
     }
 
     private void enterCredentials(String email, String password, String country, String userType, boolean signUpWithReferral, String referralCode) {
 
         if (!country.isEmpty()) {
-            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@role='combobox']"))).sendKeys(country);
+            driver.findElement(By.xpath("//input[@role='combobox']")).sendKeys(country);
             WebElement selectCountry = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='" + country + "']")));
             selectCountry.click();
         }
 
         if (!userType.isEmpty()) {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Corporate']"))).click();
+            driver.findElement(By.xpath("//div[text()='Corporate']")).click();
         }
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Email']"))).sendKeys(email);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Password']"))).sendKeys(password);
+        driver.findElement(By.xpath("//input[@placeholder='Email']")).sendKeys(email);
+        driver.findElement(By.xpath("//input[@placeholder='Password']")).sendKeys(password);
 
         if (signUpWithReferral) {
             // expand the referral code field
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[text()='Referral code (optional)']"))).click();
+            driver.findElement(By.xpath("//label[text()='Referral code (optional)']")).click();
 
             // enter referral code
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@name='referralCode']"))).sendKeys(referralCode);
@@ -116,7 +148,7 @@ public class Signup {
 
     private void handleTnCPopup() {
         try {
-            WebElement checkBox = new WebDriverWait(driver, Duration.ofSeconds(2)).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']")));
+            WebElement checkBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label/span/p[text()='I agree to the BitDelta Terms and conditions']")));
             checkBox.click();
 
             try {
@@ -192,8 +224,9 @@ public class Signup {
 
     private void teardown() {
         if (driver != null) {
-//            driver.quit();
+            driver.quit();
             System.out.println("Everything done, no error occurred.");
         }
     }
+
 }

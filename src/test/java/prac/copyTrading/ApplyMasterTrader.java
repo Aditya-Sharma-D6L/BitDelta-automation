@@ -43,6 +43,19 @@ public class ApplyMasterTrader {
             return;
         }
 
+        // check if derivatives quiz not done
+//        DerivativesQuiz derivativesQuiz = new DerivativesQuiz(driver);
+//        try {
+////            WebElement isDerivativeQuizVisible = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[text()='Derivative Quiz']")));
+//            WebElement isDerivativeQuizVisible = new WebDriverWait(driver, Duration.ofSeconds(2)).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[text()='Derivative Quiz']")));
+//            if (isDerivativeQuizVisible.isDisplayed()) {
+//                System.out.println("Derivatives quiz not done");
+//            }
+//            derivativesQuiz.performDerivativesQuiz(driver);
+//        } catch (NoSuchElementException | TimeoutException e) {
+//            // means derivatives quiz has been done
+//        }
+
         // perform "Copy Trading" quiz
         try {
             Thread.sleep(2000);

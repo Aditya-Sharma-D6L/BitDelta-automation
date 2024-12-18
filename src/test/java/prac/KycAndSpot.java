@@ -12,7 +12,7 @@ public class KycAndSpot {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    private static final String env = "qa";
+    private static final String env = "staging";
 
     private static final boolean approveKyc = true;
     private static final boolean approveSpotBalance = true;
@@ -34,12 +34,17 @@ public class KycAndSpot {
         // Navigate to admin URL
         driver.get(adminUrl);
 
+        // enable dark theme
+        WebElement toggleDarkTheme = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@id='app']//div[text()='Dark Mode']")));
+//        toggleDarkTheme.click();
+
         // Login to the admin portal
         loginToAdmin();
 
-        Thread.sleep(2000);
+//        Thread.sleep(2000);
+
         // Click on "Users" tab on left panel
-        driver.findElement(By.xpath("//div[contains(text(), 'Users ')]")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(), 'Users ')]"))).click();
 
         // Search by UID or Email based on provided input
         if (uid != null && !uid.isEmpty()) {
@@ -72,7 +77,7 @@ public class KycAndSpot {
 
         if (env.equals("staging")) {
             adminEmail = "ashutosh.parihar@delta6labs.com";
-            adminPassword = "Pass@12345";
+            adminPassword = "Pass@123456";
         } else if (env.equals("qa")) {
             adminEmail = "laxman.kumar@bitdelta.com";
             adminPassword = "Pass@1234567";
@@ -127,7 +132,7 @@ public class KycAndSpot {
         WebDriver driver = new ChromeDriver();
 
         // Define input values for manual execution
-        String uid = "305811";             // Set UID if available, or leave blank if using email
+        String uid = "754801";             // Set UID if available, or leave blank if using email
         String email = ""; // Set email if UID is not used
         String spotBalanceAmount = "5000"; // Spot balance amount to be updated
 

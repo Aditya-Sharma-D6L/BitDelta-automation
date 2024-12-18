@@ -23,17 +23,86 @@ public class EmailAndPushNotifications {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
+    // Define the border size
+    static int borderLength = 50;
+
+    // Method to print the "START" message with borders
+    public static void printStart() {
+        String message = "START";
+        int padding = (borderLength - message.length() - 2) / 2; // Calculate padding
+        String border = "-".repeat(borderLength);  // Create the border
+
+        System.out.println(border);
+        System.out.println(" ".repeat(padding) + message + " ".repeat(borderLength - message.length() - padding - 2));
+        System.out.println(border);
+    }
+
+    // Method to print the "END" message with borders
+    public static void printEnd() {
+        String message = "END";
+        int padding = (borderLength - message.length() - 2) / 2; // Calculate padding
+        String border = "-".repeat(borderLength);  // Create the border
+
+        System.out.println(border);
+        System.out.println(" ".repeat(padding) + message + " ".repeat(borderLength - message.length() - padding - 2));
+        System.out.println(border);
+    }
+
+    private void printDetails(String notificationType, String targetUsers, String pushTopic, String redirectionPlace, String url, String redirectScreen, String[] emails, String title, String content) {
+
+        if (notificationType.equals("notification")) {
+            System.out.println("'Notification Type' : Push Notification");
+            System.out.println("'Target Users' : " + targetUsers.toUpperCase());
+
+            // print push topic
+            if (targetUsers.equals("all")) {
+                System.out.println("'Push Topic' : " + pushTopic);
+            } else if (targetUsers.equals("specific")) {
+                StringBuilder emailList = new StringBuilder("'Emails' : ");  // StringBuilder to accumulate emails
+
+                for (int i = 0; i < emails.length; i++) {
+                    emailList.append(emails[i]);
+                    if (i < emails.length - 1) {
+                        emailList.append(", ");  // Add comma and space if it's not the last email
+                    }
+                }
+
+                System.out.println(emailList.toString());  // Print the final formatted string
+            }
+            System.out.println();
+
+            // print title/subject
+            System.out.println("'Title/Subject' : " + title);
+
+            // print body
+            System.out.println();
+            System.out.println("'Body/Content' : " + content);
+            System.out.println();
+
+            // print redirection place and screen
+            if (redirectionPlace.equals("url")) {
+                System.out.println("'Redirection Place' : " + redirectionPlace);
+                System.out.println("'Redirection URL' : " + url);
+            }
+            if (redirectionPlace.equals("screen")) {
+                System.out.println("'Redirection Place' : Application " + redirectionPlace);
+                System.out.println("'Redirection Screen' : " + redirectScreen);
+            }
+        }
+    }
+
     public void performPushNotification() throws InterruptedException, IOException {
         String adminUrl = "https://" + env + "-admin.bitdelta.com/login";
         driver.manage().window().maximize();
 
         String notificationType = "notification"; // notification -> push notification || email -> email notification
         String targetUsers = "all"; // all -> all users || specific -> specific users || other -> other options
-        String pushTopic = "SYSTEM"; // SYSTEM || NEWS || PRICE
-        String redirectionPlace = "screen"; // url -> to send on web || screen -> to send in mobile
-        String url = "https://www.ndtv.com/india-news/maharashtra-oath-ceremony-live-updates-devendra-fadnavis-to-be-sworn-in-as-maharashtra-chief-minister-pm-modi-to-attend-7176368";
-        String redirectScreen = "wallet";  // home, market, spot, derivatives, wallet
-        String[] emails = {"copt1@yopmail.com", "pn2@yopmail.com"};
+        String pushTopic = "SYSTEM"; // SYSTEM || NEWS || PRICE - when all is selected | NA for specific users
+        String redirectionPlace = "url"; // url -> to send on web || screen -> to send in mobile
+        String url = "https://bitdelta.com/en/trade/derivatives/btc-usd";
+        String redirectScreen = "spot";  // home, market, spot, derivatives, wallet
+        String[] emails = {"copt1@yopmail.com", "pn2@yopmail.com", "fcmround4@yopmail.com", "fcn@yopmail.com", "ashutosh.parihar@delta6labs.com", "fcmround13@yopmail.com"};
+//        String[] emails = {"fcmround13@yopmail.com"};
 
         driver.get(adminUrl);
         performAdminLogin();
@@ -48,16 +117,22 @@ public class EmailAndPushNotifications {
 
         String choice = "";
         boolean flag = true;
-        Integer maxCount = 3; //null if don't want to run loop count times
+        Integer maxCount = null; //null - If don't want to run loop "maxCount" times
         Integer currentCount = 1;
 
         do {
             Thread.sleep(500);
+
+            if (maxCount == null) {
+                System.out.println("Triggering PN for " + targetUsers + " users...");
+            } else {
+                System.out.println("Running PN " + currentCount + " time");
+            }
             pushNotification(notificationType, targetUsers, pushTopic, redirectionPlace, redirectScreen, emails, url, currentCount);
 
             // If maxCount is provided, stop automatically after the specified number of iterations
             if (maxCount != null && currentCount <= (maxCount + 1)) {
-                System.out.println("Running PN " + currentCount + " time");
+                System.out.println();
                 currentCount++;
 
                 if (currentCount.equals(maxCount)) {
@@ -83,6 +158,7 @@ public class EmailAndPushNotifications {
         driver.findElement(By.xpath("(//select)[2]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + targetUsers + "']"))).click();
 
+        //select push topic or enter email(s)
         if (targetUsers.equals("all")) {
             driver.findElement(By.xpath("(//select)[3]")).click();
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//option[@value='" + pushTopic + "']"))).click();
@@ -92,7 +168,7 @@ public class EmailAndPushNotifications {
 
             for (String email : emails) {
                 emailBox.sendKeys(email + ",");
-                Thread.sleep(300);
+                Thread.sleep(200);
             }
         }
 
@@ -100,24 +176,61 @@ public class EmailAndPushNotifications {
         String title = "";
         WebElement inputField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter title here']")));
 
+        if (redirectScreen.equals("screen")) {
+            if ("specific".equals(targetUsers) && (currentCount == null || currentCount == 0)) {
+                title = "SPECIFIC: Test title for specific users";
+            }
+            if ("specific".equals(targetUsers) && currentCount != null) {
+                title = "SPECIFIC: Test title " + currentCount + " for specific users";
+            }
+            if ("all".equals(targetUsers) && currentCount != null && currentCount > 0) {
+                title = pushTopic + " - " + redirectScreen.toUpperCase() + "  " + currentCount + ": Test title for all users";
+            }
+            if ("all".equals(targetUsers)) {
+                title = pushTopic + " " + notificationType + ": Test title for all users";
+            }
+            inputField.sendKeys(title);
+        }
+        // else
         if ("specific".equals(targetUsers) && (currentCount == null || currentCount == 0)) {
             title = "SPECIFIC: Test title for specific users";
         }
-        if ("specific".equals(targetUsers)) {
+        if ("specific".equals(targetUsers) && currentCount != null) {
             title = "SPECIFIC: Test title " + currentCount + " for specific users";
         }
         if ("all".equals(targetUsers) && currentCount != null && currentCount > 0) {
-            title = pushTopic + " - " + redirectScreen.toUpperCase() + " Screen " + currentCount + ": Test title for all users";
+            title = pushTopic + " - Application " + redirectionPlace.toUpperCase() + " Screen " + currentCount + ": Test title for all users";
         }
         if ("all".equals(targetUsers)) {
-            title = pushTopic + " - " + redirectScreen.toUpperCase() + " Screen: Test title for all users";
+            title = pushTopic + " " + notificationType + ": Test title for all users";
         }
         inputField.sendKeys(title);
 
 
         // Enter body
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Enter content here...']")))
-                .sendKeys(pushTopic + ": Test content/body for " + redirectScreen.toUpperCase() + " for " + targetUsers + " users.");
+        String content = "";
+        if ("specific".equals(targetUsers) && ("screen".equals(redirectionPlace) || "url".equals(redirectionPlace))) {
+            if ("screen".equals(redirectionPlace)) {
+                content = targetUsers.toUpperCase() + " User: Test for " + redirectionPlace.toUpperCase() + " page redirection for " + targetUsers + " users.";
+            } else {
+                content = targetUsers.toUpperCase() + " User: " + redirectionPlace.toUpperCase() + " redirection. \nRedirection will happen to a webpage when clicked. \nIn mobile devices, URL should open in web view.";
+            }
+            // Send the content to the textarea
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Enter content here...']")))
+                    .sendKeys(content);
+        }
+
+        if ("all".equals(targetUsers) && ("screen".equals(redirectionPlace) || "url".equals(redirectionPlace))) {
+            if ("screen".equals(redirectionPlace)) {
+                content = pushTopic + ": Test for " + redirectScreen.toUpperCase() + " page redirection for " + targetUsers + " users.";
+            } else {
+                content = pushTopic + " User: " + redirectionPlace.toUpperCase() + " redirection. \nRedirection will happen to a webpage when clicked. \nIn mobile devices, URL should open in web view.";
+            }
+            // Send the content to the textarea
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Enter content here...']")))
+                    .sendKeys(content);
+        }
+
 
         // select Redirection place
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[normalize-space()='Redirection Place']/following-sibling::*[1]"))).click();
@@ -134,6 +247,10 @@ public class EmailAndPushNotifications {
         }
 
         driver.findElement(By.xpath("//button[text()='Send notification']")).click();
+
+        printStart();
+        printDetails(notificationType, targetUsers, pushTopic, redirectionPlace, url, redirectScreen, emails, title, content);
+        printEnd();
     }
 
     private void performAdminLogin() throws InterruptedException {
